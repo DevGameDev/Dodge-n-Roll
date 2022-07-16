@@ -24,7 +24,7 @@ public class Deck : MonoBehaviour
 
         // Get number of child objects, choose a random number from 1 to that number
         int numberOfChildren = listOfChildren.Count;
-        int randomPick = Random.Range(1, numberOfChildren);
+        int randomPick = Random.Range(0, numberOfChildren-1);
 
         // Set current die face to the random number chosen
         dieFace = listOfChildren[randomPick].transform;
@@ -38,11 +38,17 @@ public class Deck : MonoBehaviour
 
         // Choose one of those children, then return the associated GameObject
         numberOfChildren = listOfGrandchildren.Count;
-        randomPick = Random.Range(1, numberOfChildren);
+        randomPick = Random.Range(0, numberOfChildren-1);
         resultingDie = listOfGrandchildren[randomPick];
 
         Debug.Log(resultingDie);
         return resultingDie;
+    }
+
+    // Todo 
+    public void PlayDie()
+    {
+
     }
 
 }

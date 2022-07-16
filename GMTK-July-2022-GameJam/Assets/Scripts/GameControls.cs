@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class GameControls : MonoBehaviour
 {
-    string controlID;
+    public string controlID;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,6 +18,7 @@ public class GameControls : MonoBehaviour
         ProcessSelection(controlID);
     }
 
+    // TODO return inputState enumeration element found in GameMaster
     string ProcessInput()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
@@ -45,7 +46,8 @@ public class GameControls : MonoBehaviour
     {
         if (controlID == "right")
         {
-            Debug.Log("right");
+            Globals.currentInput
+            Globals globals = new Globals();
         }
 
         if (controlID == "left")
