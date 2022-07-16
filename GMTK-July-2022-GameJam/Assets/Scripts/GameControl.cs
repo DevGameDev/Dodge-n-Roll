@@ -44,20 +44,38 @@ public class GameControl : MonoBehaviour
     {
         currentInput = controls.currentInput;
         if (currentInput == InputStates.Exit) ExitGame();
-        else if (currentState == GameStates.GameStart) RunGameStart(currentInput);
-        else if (currentState == GameStates.DiceSelection) RunDiceSelection(currentInput, playerTurn);
-        else if (currentState == GameStates.DotSelection) RunDotSelection(currentInput, playerTurn);
+        else if (currentState == GameStates.GameStart) GameStartTick(currentInput);
+        else if (currentState == GameStates.DiceSelection) DiceSelectionTick(currentInput, playerTurn);
+        else if (currentState == GameStates.DotSelection) DotSelectionTick(currentInput, playerTurn);
     }
 
-    void RunGameStart(InputStates input) {
-        return;
+    void GameStartTick(InputStates input) {
+        if (input == InputStates.Enter) RunDiceSelection();
     }
 
-    void RunDiceSelection(InputStates input, int playerTurn) {
-        return;
+    void RunDiceSelection() {
+        currentState = GameStates.DiceSelection;
+        
+        if (playerTurn == 1) {
+            bool[] activeDie = player1ActiveDie;
+            List<(int, int)>[] moves = player1Moves;
+        }
     }
 
-    void RunDotSelection(InputStates input, int playerturn) {
+    void DiceSelectionTick(InputStates input, int playerTurn) {
+        if (input == InputStates.Enter) RunDotSelection();
+    }
+
+    void RunDotSelection() {
+        currentState = GameStates.DotSelection;
+    }
+
+    void DotSelectionTick(InputStates input, int playerturn) {
+        if (input == InputStates.Enter) RunMove();
+    }
+
+    void RunMove() {
+        currentState = GameStates.Moving;
         return;
     }
 
