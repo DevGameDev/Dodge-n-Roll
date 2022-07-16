@@ -42,7 +42,7 @@ public class GameControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        currentInput = controls.currentInput;
+        currentInput = controls.ProcessInput();
         if (currentInput == InputStates.Exit) ExitGame();
         else if (currentState == GameStates.GameStart) GameStartTick(currentInput);
         else if (currentState == GameStates.DiceSelection) DiceSelectionTick(currentInput, playerTurn);

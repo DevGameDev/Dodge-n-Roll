@@ -31,36 +31,36 @@ public class InputControl : MonoBehaviour
     }
 
     // TODO return inputState enumeration element found in GameMaster
-    void ProcessInput()
+    public InputStates ProcessInput()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            currentInput = InputStates.Right;
+            return InputStates.Right;
         }
 
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            currentInput = InputStates.Left;
+            return InputStates.Left;
         }
 
         else if (Input.GetKeyDown(KeyCode.Return))
         {
-            currentInput = InputStates.Enter;
+            return InputStates.Enter;
         }
 
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            currentInput = InputStates.Back;
+            return InputStates.Back;
         }
 
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
-            currentInput = InputStates.Exit;
+            return InputStates.Exit;
         }
 
         else
         {
-            currentInput = InputStates.Idle;
+            return InputStates.Idle;
         }
     }
 
