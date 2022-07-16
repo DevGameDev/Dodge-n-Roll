@@ -48,6 +48,16 @@ public class GameControls : MonoBehaviour
             inputEnum = inputStates.Enter;
         }
 
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            inputEnum = inputStates.Back;
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            inputEnum = inputStates.Exit;
+        }
+
         else
         {
             inputEnum = inputStates.Idle;
