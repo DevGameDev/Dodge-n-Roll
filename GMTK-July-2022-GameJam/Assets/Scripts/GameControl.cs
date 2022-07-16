@@ -14,6 +14,9 @@ public class GameControl : MonoBehaviour
         GameOver,
     }
 
+    // The Deck
+    [SerializeField] private Deck theDeck;
+
     // Settings
     private static int numDie = 3; // Number of dice that are rolled at once
 
@@ -30,13 +33,18 @@ public class GameControl : MonoBehaviour
 
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
     private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
+    private GameObject[] player1Dice = new GameObject[3];
+
 
     private bool[] player2ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
     private List<Vector2Int>[] player2Moves = new List<Vector2Int>[numDie];
+    private GameObject[] player2Dice = new GameObject[3];
 
     void Start()
     {
         grid.GenerateTiles();
+        player1Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
+        player2Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
     }
 
     // Update is called once per frame
@@ -60,6 +68,7 @@ public class GameControl : MonoBehaviour
             bool[] activeDie = player1ActiveDie;
             List<Vector2Int>[] moves = player1Moves;
         }
+
     }
 
     void DiceSelectionTick(InputStates input, int playerTurn) {
