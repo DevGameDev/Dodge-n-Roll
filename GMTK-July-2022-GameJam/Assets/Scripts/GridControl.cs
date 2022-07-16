@@ -12,27 +12,16 @@ public class GridControl : MonoBehaviour
     private static int _gridTileWidth = 4; // Number of tiles per side
 
     // Generated grid information
-    private int _tileWorldSize; // Tile dimensions in UnityUnits
     private (int, int)[] _tileCoordinates;
     private Vector3[] _tilePositions; // Corresponding tile world positions
 
-    public (int, int) player1Position;
-    public (int, int) player2Position;
+    public (int, int) _player1Position;
+    public (int, int) _player2Position;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        _tileWorldSize = _gridTileWidth / _gridTileWidth;
-        GenerateTiles();
-    }
+    public void GenerateTiles() {
+        float tileWorldSize = _gridTileWidth / _gridTileWidth;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void GenerateTiles() {
+        // Generate int coordinate pairs
         _tileCoordinates = new (int, int)[_gridTileWidth*_gridTileWidth];
         int index = 0;
         for (int x = 0; x < _gridTileWidth; x++) {
@@ -41,9 +30,17 @@ public class GridControl : MonoBehaviour
                 index++;
             }
         }
+
+        // Generate Unity world locations
+        Vector3 gridNegXZCorner = new Vector3(_originPosition.x - _gridWorldSize/2, _originPosition.y, _originPosition.z - _gridWorldSize/2);
         _tilePositions = new Vector3[_tileCoordinates.Length];
-        Vector3 gridNegXZCorner = new Vector3(_originPosition.x - _gridWorldSize/2, _originPosition.y, 
-        for 
+        index = 0;
+        for (float x = 0.5f; x < _gridTileWidth; x++) {
+            for (float z = 0.5f; z < _gridTileWidth; z++) {
+                _tilePositions[index] = new Vector3(gridNegXZCorner.x + (x * tileWorldSize), gridNegXZCorner.y, gridNegXZCorner.z + (z * tileWorldSize));
+                index++;
+            }
+        }
     }
 
     List<(int, int)> GetMoveCoordinates((int, int) playerCoordinates, (int, int)[] offsets) {
@@ -62,16 +59,14 @@ public class GridControl : MonoBehaviour
         return moveCoordinates;
     }
 
-    bool HasValidMove(List<(int, int)> moveCoordinates) {
+    bool isValidMove(List<(int, int)> moveCoordinates) {
         if (moveCoordinates.Count > 0) return true;
         return false;
     }
 
-    bool ExecuteMove((int, int) playerCoordinates, List<(int, int)> moveCoordinates) {
-        if (!HasValidMove(moveCoordinates)) {
-            if GameMaster.
-            GameMaster.pl
-        }
-    }
+    // bool ExecuteMove((int, int) playerCoordinates, List<(int, int)> moveCoordinates) {
+    //     if (!HasValidMove(moveCoordinates)) {
+    //     }
+    // }
 }
 

@@ -10,11 +10,11 @@ public class GameMaster : MonoBehaviour
         GameStart,
         MainMenu,
         Loading,
-        pause,
+        Pause,
         Player1Turn,
         Player2Turn,
         GameOver,
-        settings
+        Settings
     }
 
     public enum inputStates { // each automatically assigned a value on 0-(len-1)
@@ -32,26 +32,34 @@ public class GameMaster : MonoBehaviour
     // State
     public gameStates gameState; // enumeration index
     public inputStates currentInput; // enumeration index
-
-    public int[] activeDie; // Die still available
     public int selectedDie; // selected die/move
     public int selectedDot; // index of coordinate in move
 
+    // Player die information (isActive, moveset)
+    public (int, List<(int, int)>)[] Player1Die ;
+    public (int, List<(int, int)>)[] Player2Die ;
+
     GameControls controls;
+    GridControl grid;
 
     void Start()
     {
         gameState = gameStates.GameStart;
         currentInput = inputStates.Idle;
-        activeDie = Enumerable.Repeat(1, numDice).ToArray();
+        // Player1ActiveDie = Enumerable.Repeat(1, numDice).ToArray();
+        // Player1ActiveDie = Enumerable.Repeat(1, numDice).ToArray();
 
         controls = new GameControls();
+        grid = new GridControl();
+
+        grid.GenerateTiles();
     }
 
     // Update is called once per frame
     void Update()
     {
         // currentInput = controls.controlID;
+
     }
 }
 

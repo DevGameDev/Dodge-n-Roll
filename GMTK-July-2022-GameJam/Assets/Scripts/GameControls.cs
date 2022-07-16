@@ -46,8 +46,8 @@ public class GameControls : MonoBehaviour
     {
         if (controlID == "right")
         {
-            Globals.currentInput
-            Globals globals = new Globals();
+            // Globals.currentInput
+            // Globals globals = new Globals();
         }
 
         if (controlID == "left")
