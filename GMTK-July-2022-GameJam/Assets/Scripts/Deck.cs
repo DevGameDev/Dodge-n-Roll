@@ -5,15 +5,11 @@ using UnityEngine;
 public class Deck : MonoBehaviour
 {
 
-    List<GameObject> listOfChildren;
+    public List<GameObject> listOfChildren;
     Transform dieFace;
 
     public void Start()
     {
-        foreach (Transform child in transform)
-        {
-            listOfChildren.Add(child.gameObject);
-        }
 
         RollTheDie();
     }
@@ -30,11 +26,7 @@ public class Deck : MonoBehaviour
         dieFace = listOfChildren[randomPick].transform;
 
         // Create a list of the children of that die face
-        List<GameObject> listOfGrandchildren = new List<GameObject>();
-        foreach (Transform child in dieFace)
-        {
-            listOfGrandchildren.Add(child.gameObject);
-        }
+        List<GameObject> listOfGrandchildren = dieFace.GetComponent<DeckChild>().listOfGrandChildren;
 
         // Choose one of those children, then return the associated GameObject
         numberOfChildren = listOfGrandchildren.Count;
