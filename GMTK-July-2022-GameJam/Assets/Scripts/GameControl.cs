@@ -29,10 +29,10 @@ public class GameControl : MonoBehaviour
     private int selectedDot = 0; // index of coordinate in move
 
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    private List<(int, int)>[] player1Moves = new List<(int, int)>[numDie];
+    private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
 
     private bool[] player2ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    private List<(int, int)>[] player2Moves = new List<(int, int)>[numDie];
+    private List<Vector2Int>[] player2Moves = new List<Vector2Int>[numDie];
 
     void Start()
     {
@@ -58,7 +58,7 @@ public class GameControl : MonoBehaviour
         
         if (playerTurn == 1) {
             bool[] activeDie = player1ActiveDie;
-            List<(int, int)>[] moves = player1Moves;
+            List<Vector2Int>[] moves = player1Moves;
         }
     }
 
