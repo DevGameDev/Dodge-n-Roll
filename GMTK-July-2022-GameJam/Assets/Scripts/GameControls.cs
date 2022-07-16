@@ -5,59 +5,54 @@ using UnityEngine;
 public class GameControls : MonoBehaviour
 {
     public string controlID;
+
+    public enum inputStates
+    { // each automatically assigned a value on 0-(len-1)
+        Idle, // no input 
+        Left, // a / left arrow / left click
+        Right, // d / right arrow / right click
+        Enter, // w / up arrow / middle click
+        Back, // s / down arrow / spacebar
+        Exit, // esc / quit button
+    }
+
+    public inputStates inputEnum;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        controlID = ProcessInput();
-        ProcessSelection(controlID);
+        ProcessInput();
     }
 
     // TODO return inputState enumeration element found in GameMaster
-    string ProcessInput()
+    void ProcessInput()
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            return "right";
+            inputEnum = inputStates.Right;
         }
 
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            return "left";
+            inputEnum = inputStates.Left;
         }
 
         else if (Input.GetKeyDown(KeyCode.Return))
         {
-            return "return";
+            inputEnum = inputStates.Enter;
         }
 
         else
         {
-            return "";
+            inputEnum = inputStates.Idle;
         }
     }
 
-    void ProcessSelection(string controlID)
-    {
-        if (controlID == "right")
-        {
-            // Globals.currentInput
-            // Globals globals = new Globals();
-        }
 
-        if (controlID == "left")
-        {
-            Debug.Log("left");
-        }
-
-        if (controlID == "return")
-        {
-            Debug.Log("return");
-        }
-    }
 }
