@@ -49,7 +49,7 @@ public class GameMaster : MonoBehaviour
         // Player1ActiveDie = Enumerable.Repeat(1, numDice).ToArray();
         // Player1ActiveDie = Enumerable.Repeat(1, numDice).ToArray();
 
-        controls = new GameControls();
+        //controls = new GameControls();
         grid = new GridControl();
 
         grid.GenerateTiles();

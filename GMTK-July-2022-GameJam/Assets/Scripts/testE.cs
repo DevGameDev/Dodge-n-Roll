@@ -16,6 +16,6 @@ public class testE : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(test.GetComponent<GameControls>().inputEnum);
+        Debug.Log(test.GetComponent<InputControl>().currentInput);
     }
 }

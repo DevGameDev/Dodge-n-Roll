@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Deck.cs" />
     <Compile Include="Assets\Scripts\ValidMoves.cs" />
-    <Compile Include="Assets\Scripts\GameControls.cs" />
+    <Compile Include="Assets\Scripts\InputControl.cs" />
     <Compile Include="Assets\Scripts\GridControl.cs" />
     <Compile Include="Assets\Scripts\TileStatus.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
