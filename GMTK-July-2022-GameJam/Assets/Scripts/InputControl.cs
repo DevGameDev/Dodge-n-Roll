@@ -27,7 +27,7 @@ public class InputControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ProcessInput();
+        // ProcessInput();
     }
 
     // TODO return inputState enumeration element found in GameMaster
