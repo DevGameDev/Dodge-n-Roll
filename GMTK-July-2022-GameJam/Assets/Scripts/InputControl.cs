@@ -12,11 +12,11 @@ public enum InputStates
     Exit, // esc / quit button
 }
 
-public class GameControls : MonoBehaviour
+public class InputControl : MonoBehaviour
 {
     public string controlID;
 
-    public InputStates inputEnum;
+    public InputStates currentInput;
 
     // Start is called before the first frame update
     void Start()
@@ -35,32 +35,32 @@ public class GameControls : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            inputEnum = InputStates.Right;
+            currentInput = InputStates.Right;
         }
 
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            inputEnum = InputStates.Left;
+            currentInput = InputStates.Left;
         }
 
         else if (Input.GetKeyDown(KeyCode.Return))
         {
-            inputEnum = InputStates.Enter;
+            currentInput = InputStates.Enter;
         }
 
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            inputEnum = InputStates.Back;
+            currentInput = InputStates.Back;
         }
 
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
-            inputEnum = InputStates.Exit;
+            currentInput = InputStates.Exit;
         }
 
         else
         {
-            inputEnum = InputStates.Idle;
+            currentInput = InputStates.Idle;
         }
     }
 
