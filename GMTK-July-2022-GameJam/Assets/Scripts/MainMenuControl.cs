@@ -20,7 +20,6 @@ public class MainMenuControl : MonoBehaviour
     void Update()
     {
         currentInput = controls.currentInput;
-
     }
 }
 

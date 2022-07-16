@@ -46,7 +46,7 @@ public class GameControl : MonoBehaviour
         if (currentInput == InputStates.Exit) ExitGame();
         else if (currentState == GameStates.GameStart) RunGameStart(currentInput);
         else if (currentState == GameStates.DiceSelection) RunDiceSelection(currentInput, playerTurn);
-        else if (currentState == GameStates.DotSelection) RunDotSelection(currentInput, playerTurn)
+        else if (currentState == GameStates.DotSelection) RunDotSelection(currentInput, playerTurn);
     }
 
     void RunGameStart(InputStates input) {
