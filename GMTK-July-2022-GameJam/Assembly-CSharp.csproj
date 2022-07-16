@@ -62,6 +62,7 @@
     <Compile Include="Assets\Scripts\GridControl.cs" />
     <Compile Include="Assets\Scripts\TileStatus.cs" />
     <Compile Include="Assets\Scripts\GameMaster.cs" />
+    <Compile Include="Assets\Scripts\testE.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

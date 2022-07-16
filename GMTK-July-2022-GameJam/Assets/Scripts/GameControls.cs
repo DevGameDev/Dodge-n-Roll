@@ -2,21 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum InputStates
+{ // each automatically assigned a value on 0-(len-1)
+    Idle, // no input 
+    Left, // a / left arrow / left click
+    Right, // d / right arrow / right click
+    Enter, // w / up arrow / middle click
+    Back, // s / down arrow / spacebar
+    Exit, // esc / quit button
+}
+
 public class GameControls : MonoBehaviour
 {
     public string controlID;
 
-    public enum inputStates
-    { // each automatically assigned a value on 0-(len-1)
-        Idle, // no input 
-        Left, // a / left arrow / left click
-        Right, // d / right arrow / right click
-        Enter, // w / up arrow / middle click
-        Back, // s / down arrow / spacebar
-        Exit, // esc / quit button
-    }
-
-    public inputStates inputEnum;
+    public InputStates inputEnum;
 
     // Start is called before the first frame update
     void Start()
@@ -35,32 +35,32 @@ public class GameControls : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.RightArrow))
         {
-            inputEnum = inputStates.Right;
+            inputEnum = InputStates.Right;
         }
 
         else if (Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            inputEnum = inputStates.Left;
+            inputEnum = InputStates.Left;
         }
 
         else if (Input.GetKeyDown(KeyCode.Return))
         {
-            inputEnum = inputStates.Enter;
+            inputEnum = InputStates.Enter;
         }
 
         else if (Input.GetKeyDown(KeyCode.DownArrow))
         {
-            inputEnum = inputStates.Back;
+            inputEnum = InputStates.Back;
         }
 
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
-            inputEnum = inputStates.Exit;
+            inputEnum = InputStates.Exit;
         }
 
         else
         {
-            inputEnum = inputStates.Idle;
+            inputEnum = InputStates.Idle;
         }
     }
 
