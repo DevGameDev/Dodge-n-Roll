@@ -7,7 +7,7 @@ public class GridControl : MonoBehaviour
 // Dimensions must be manually altered in this script.
 {
     // Manual-Entry information
-    private static int _gridTileWidth = 4; // Number of tiles per side
+    private static int _gridTileWidth = GameControl.gridSize; // Number of tiles per side
 
     // Generated grid information
     private (int, int)[] _tileCoordinates;
