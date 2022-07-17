@@ -65,8 +65,15 @@ public class GameControl : MonoBehaviour
         currentState = GameStates.DiceSelection;
         
         if (playerTurn == 1) {
+            GameObject[] die = player1Dice;
             bool[] activeDie = player1ActiveDie;
-            List<Vector2Int>[] moves = player1Moves;
+        }
+        else {
+            GameObject[] die = player2Dice;
+            bool[] activeDie = player2ActiveDie;
+        }
+        for (int i = 0; i < numDie; i++) {
+            
         }
 
     }
@@ -89,7 +96,7 @@ public class GameControl : MonoBehaviour
     }
 
     void ExitGame() {
-        return;
+        Application.Quit();
     }
 }
 
