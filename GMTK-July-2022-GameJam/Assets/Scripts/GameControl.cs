@@ -28,8 +28,8 @@ public class GameControl : MonoBehaviour
     private GameStates currentState = GameStates.GameStart; // enumeration index
     private InputStates currentInput = InputStates.Idle; // enumeration index
 
-    private int selectedDie = 0; // selected die/move
-    private int selectedDot = 0; // index of coordinate in move
+    // private int selectedDie = 0; // selected die/move
+    // private int selectedDot = 0; // index of coordinate in move
 
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
     private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
