@@ -18,13 +18,15 @@ public class GameControl : MonoBehaviour
     [SerializeField] private Deck theDeck;
 
     // Settings
-    private static int numDie = 3; // Number of dice that are rolled at once
+    public static int numDie = 3; // Number of dice that are rolled at once
+    public static int gridSize = 4; // Number of tiles in each dimension
 
     // GameObject / Modules
     GameObject gameController;
     private InputControl controls;
     private GameUIControl ui;
     private GridControl grid;
+    private Deck deck;
 
     // State
     private int playerTurn; // 1 = Player 1 turn, 2 = Player 2 turn
@@ -61,6 +63,8 @@ public class GameControl : MonoBehaviour
 
         ui.HandleGameLoad();
         grid.GenerateTiles();
+        GenerateDie(1);
+        GenerateDie(2);
         player1Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
         player2Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
     }
@@ -82,8 +86,8 @@ public class GameControl : MonoBehaviour
         }
     }
 
-    void RunDiceSelection() {
-        currentState = GameStates.DiceSelection;
+    void SetPlayerVariables(int playerTurn) {
+
         if (playerTurn == 1) {
             currentActiveDie = player1ActiveDie;
             currentDice = player1Dice;
@@ -94,7 +98,14 @@ public class GameControl : MonoBehaviour
             currentDice = player2Dice;
             currentMoves = player2Moves;
         }
-        // TODO: Generate Dice for each player if necessary
+    }
+
+    void RunDiceSelection() {
+        currentState = GameStates.DiceSelection;
+        if (player1ActiveDie.Count<bool>() <= 0) GenerateDie(1);
+        if (player2ActiveDie.Count<bool>() <= 0) GenerateDie(2);
+
+        GenerateDie(2);
     }
 
     void DiceSelectionTick(InputStates input) {
@@ -157,5 +168,69 @@ public class GameControl : MonoBehaviour
     void ExitGame() {
         Application.Quit();
     }
+
+    void GenerateDie(int playerTurn) {
+        SetPlayerVariables(playerTurn);
+        if (playerTurn == 1) {
+            for (int i = 0; i < numDie; i++) {
+                player1ActiveDie[i] = true;
+                player1Dice[i] = GetDice();
+
+            }
+        }
+        return;
+    }
+
+    List GetDice() {
+        GameObject dice = deck.RollTheDie();
+        ValidMoves moveset = dice.GetComponent<ValidMoves>();
+        List<Vector2Int> movesPackage = moveset.GetMoves();
+        
+    }
 }
 
+
+
+    // After dotselection is run and the dot is selected:
+
+    /*
+    // First, we need a "bool HasValidMove(List<Vector2Int> listOfMovesToCheck)" function that takes in a list of moves and returns if at least one is valid
+    // Run this once after each player's turn.
+    void CheckAndReroll(){
+
+        if (it was player 1's turn) {
+            
+            // Set accumulator
+            i = 0;
+
+            // For each item of player1ActiveDie...
+            foreach(bool active in player1ActiveDie) {
+
+                // If current bool is true AND at least one valid move exists in the corresponding gameObject, break the function. We found at least one move the player can make.
+                if (active && HasValidMove(player1Moves[i].GetComponent<ValidMoves>().GetMoves())) {
+                    return
+                }
+                
+                // Increment the accumulator
+                i++;
+            }
+
+            // If we made it through all the loops, then there couldn't have been a valid move. So reset the player's hand.
+            player1Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
+        }
+
+        // Ditto for player 2
+        if (it was player 2's turn) {
+            i = 0;
+            foreach(bool active in player1ActiveDie) {
+                if (active && HasValidMove(player2Moves[i].GetComponent<ValidMoves>().GetMoves())) {
+                    return
+                }
+                
+                i++;
+            }
+
+            player2Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
+        }
+    }
+    */
