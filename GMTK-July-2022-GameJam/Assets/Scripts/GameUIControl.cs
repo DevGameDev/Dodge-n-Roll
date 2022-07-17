@@ -2,62 +2,97 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameUIControl : MonoBehaviour
 {
+    // ========== Variables ==========
     // Settings
-    Vector3 hiddenPosition = new Vector3(0, 0, 0);
+    private Vector3 hiddenPosition = new Vector3(0, 0, 0);
+    private int shadowAlphaBase = 75;
+    private int shadowAlphaHovered = 255;
 
+    // UI Collections
     private Transform tileCoordinates = GameObject.Find("gridCoordinates").GetComponent<Transform>();
-    private Transform tileOptions = GameObject.Find("tileOptions").GetComponent<Transform>();
-    // private Transform tileHighlights = GameObject.Find("gridHightlightsPositions").GetComponent<Transform>();
     private Transform diePiecePositions = GameObject.Find("dicePositions").GetComponent<Transform>();
     private Transform dieSprites = GameObject.Find("Deck").GetComponent<Transform>();
 
-    private ((int, int), SpriteRenderer)[] tilesBasic = new ((int, int), SpriteRenderer)[GameControl.gridSize]; // ((x, y), (characterSprite, tileHighlightSprite))
-    private ((int, int), (SpriteRenderer, SpriteRenderer))[] tiles = new ((int, int), (SpriteRenderer, SpriteRenderer))[GameControl.gridSize]; // ((x, y), (characterSprite, tileHighlightSprite))
-
+    // UI Elements
+    private Image startScreen = GameObject.Find("gameStart").GetComponent<Image>();
+    private ((int, int), Image)[] tiles = new ((int, int), Image)[GameControl.gridSize*GameControl.gridSize];
     private Transform[] dieLocations = new Transform[GameControl.numDie];
-    private SpriteRenderer[] arrowLocations = new SpriteRenderer[GameControl.numDie];
-    private SpriteRenderer[] shadowLocations = new SpriteRenderer[GameControl.numDie];
+    private Image[] arrows = new Image[GameControl.numDie];
+    private Image[] shadows = new Image[GameControl.numDie];
 
-    public void HandleGameLoad() {
-        // Generate Game Positions
+    // Sprites
+    private Sprite tileHighlight;
+    private Sprite tileHighlightHovered;
+    private Sprite cowLeft;
+    private Sprite cowRight;
+    private Sprite cowFront;
+    private Sprite cowBack;
+
+    // ========== Initialization ==========
+    public void LoadGame() {
+        // Find tile images
         int tileIndex = 0, dieIndex = 0, arrowIndex = 0, shadowIndex = 0;
         foreach (Transform coordinate in tileCoordinates) {
             int x = Int32.Parse(coordinate.gameObject.name.Split(",")[0]); 
             int y = Int32.Parse(coordinate.gameObject.name.Split(",")[1]);
-            SpriteRenderer tileSprite = coordinate.gameObject.GetComponent<SpriteRenderer>();
-            tilesBasic[tileIndex] = ((x, y), tileSprite);
+            Image tile = coordinate.gameObject.GetComponent<Image>();
+            tiles[tileIndex] = ((x, y), tile);
             tileIndex++;
         }
 
+        // Get die piece info
         foreach (Transform diePiece in diePiecePositions) {
             string pieceName = diePiece.gameObject.name;
+            // Die world locations
             if (pieceName.StartsWith("dice")) {
                 dieLocations[dieIndex] = diePiece.GetComponent<Transform>();
                 dieIndex++;
                 continue;
             }
+            // Arrow images
             else if (pieceName.StartsWith("arrow")) {
-                arrowLocations[arrowIndex] = diePiece.GetComponent<SpriteRenderer>();
+                arrows[arrowIndex] = diePiece.GetComponent<Image>();
                 arrowIndex++;
             }
+            // Shadow images
             else if (pieceName.StartsWith("diceShadow")) {
-                shadowLocations[shadowIndex] = diePiece.GetComponent<SpriteRenderer>();
+                shadows[shadowIndex] = diePiece.GetComponent<Image>();
             }
         }
 
         foreach (Transform dieSprite in dieSprites) {
             dieSprite.position = hiddenPosition;
         }
-        // TODO: Display game start overlay
+        startScreen.enabled = true;
         return;
     }
 
-    public void HandleGameStart() {
-        // TODO: Clear Game start overlay
+    public void LoadSprites() {
+        tileHighlight = Resources.Load<Sprite>("tileHightlight");
+        tileHighlightHovered = Resources.Load<Sprite>("tileHighlightHovered");
+        cowLeft = Resources.Load<Sprite>("cowLeft");
+        cowRight = Resources.Load<Sprite>("cowRight");
+        cowBack = Resources.Load<Sprite>("cowBack");
+        cowFront = Resources.Load<Sprite>("cowFront");
+    }
+
+    // ========== State Transitions ==========
+
+    public void StartGame() {
+        startScreen.enabled = false;
         return;
+    }
+    
+    public void SelectTile(int selectedTile) {
+        foreach (((int, int) _, Image tileImage) in tiles) {
+            tileImage.enabled = false;
+        }
+        // TODO: Move character
+        // TODO: Poof animation?
     }
 
     public void HideDie(Transform[] dieTransform) {
@@ -66,44 +101,55 @@ public class GameUIControl : MonoBehaviour
         }
     }
 
-    public void DisplayDie(bool[] activeDie, Transform[] dieTransform) {
+    public void DisplayDie(bool[] activeDie, GameObject[] die) {
         for (int i = 0; i < GameControl.numDie; i++) {
-            dieTransform[i].position = dieLocations[i].position;
+            die[i].transform.position = dieLocations[i].position;
+            if (activeDie[i]) die[i].GetComponent<Image>().color = Color.white;
+            else die[i].GetComponent<Image>().color = Color.black;
+            DeselectDie(i);
         }
-        return;
     }
 
-    public void HandleHoverDie(int lastSelectedDie, int selectedDie) {
+    public void HoverDie(int lastHoveredDie, int hoveredDie, List<(int, int)> moveCoordinates) {
+        if (lastHoveredDie != hoveredDie) arrows[lastHoveredDie].enabled = false;
+        arrows[hoveredDie].enabled = true;
         
-        // TODO: Move selection arrow
-        // TODO: Make old highlighted tiles invisble
-        // TODO: Make new highlighted tiles visble
-        return;
+        ShowTiles(moveCoordinates);
     } 
 
-    public void HandleSelectDie(int selectedDie) {
-        // TODO: Increase shadow alpha
-        // TODO: make selection arrow invisible
-        // TODO: Special highlight for currently selected tile
-        return;
+    public void SelectDie(int selectedDie, List<(int, int)> moveCoordinates) {
+        Color tempColor = shadows[selectedDie].color;
+        shadows[selectedDie].color = new Color(tempColor.r, tempColor.g, tempColor.b, shadowAlphaHovered);
+
+        arrows[selectedDie].enabled = false;
+        HoverTile(0, 0, moveCoordinates);
     }
 
-    public void HandleDeselectDie(int selectedDie) {
-        // TODO: Decrease shadow alpha
-        // TODO: Make selection arrow visible
-        // TODO: remomve special highlight for selected tile
-        return;
+    public void DeselectDie(int selectedDie) {
+        Color tempColor = shadows[selectedDie].color;
+        shadows[selectedDie].color = new Color(tempColor.r, tempColor.g, tempColor.b, shadowAlphaBase);
+
+        arrows[selectedDie].enabled = false;
+
     }
 
-    public void HandleHoverTile(int lastSelectedTile, int selectedTile) {
-        // TODO: replace special highlight on old tile
-        // TODO: replace standard highlight on new tile
-        return;
+    public void ShowTiles(List<(int, int)> moveCoordinates) {
+        foreach (((int, int) tileCoordinate, Image tileImage) in tiles) {
+            if (moveCoordinates.Contains(tileCoordinate)) {
+                tileImage.enabled = true;
+                tileImage.sprite = tileHighlight;
+            }
+            else tileImage.enabled = false;
+        }
     }
 
-    public void HandleSelectTile(int selectedTile) {
-        // TODO: remove all tile highlights
-        // TODO: Poof animation and teleport character
-        return;
+    public void HoverTile(int lastHoveredTile, int hoveredTile, List<(int, int)> moveCoordinates) {
+        (int, int) hoveredTileCoord = moveCoordinates[hoveredTile];
+        (int, int) lastHoveredTileCoord = moveCoordinates[lastHoveredTile];
+        foreach (((int, int) tileCoordinate, Image tileImage) in tiles) {
+            if (tileCoordinate == lastHoveredTileCoord) tileImage.sprite = tileHighlight;
+            if (tileCoordinate == hoveredTileCoord) tileImage.sprite = tileHighlightHovered;
+        }
     }
+
 }
