@@ -24,4 +24,12 @@ public class MainMenuControl : MonoBehaviour
     public void PlayButton() {
         SceneManager.LoadScene("GameplayScene");
     }
+
+    public void CreditsButton() {
+        SceneManager.LoadScene("CreditsScene");
+    }
+
+    public void HowdyaButton() {
+        SceneManager.LoadScene("HowdyaScene");
+    }
 }
