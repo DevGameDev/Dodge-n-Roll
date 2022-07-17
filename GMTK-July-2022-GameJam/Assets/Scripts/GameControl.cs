@@ -18,7 +18,8 @@ public class GameControl : MonoBehaviour
     [SerializeField] private Deck theDeck;
 
     // Settings
-    private static int numDie = 3; // Number of dice that are rolled at once
+    public static int numDie = 3; // Number of dice that are rolled at once
+    public static int gridSize = 4; // Number of tiles in each dimension
 
     // GameObject / Modules
     GameObject gameController;
