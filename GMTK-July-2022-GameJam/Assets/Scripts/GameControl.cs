@@ -28,8 +28,8 @@ public class GameControl : MonoBehaviour
     private GameStates currentState = GameStates.GameStart; // enumeration index
     private InputStates currentInput = InputStates.Idle; // enumeration index
 
-    private int selectedDie = 0; // selected die/move
-    private int selectedDot = 0; // index of coordinate in move
+    // private int selectedDie = 0; // selected die/move
+    // private int selectedDot = 0; // index of coordinate in move
 
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
     private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
@@ -65,8 +65,15 @@ public class GameControl : MonoBehaviour
         currentState = GameStates.DiceSelection;
         
         if (playerTurn == 1) {
+            GameObject[] die = player1Dice;
             bool[] activeDie = player1ActiveDie;
-            List<Vector2Int>[] moves = player1Moves;
+        }
+        else {
+            GameObject[] die = player2Dice;
+            bool[] activeDie = player2ActiveDie;
+        }
+        for (int i = 0; i < numDie; i++) {
+            
         }
 
     }
@@ -89,7 +96,7 @@ public class GameControl : MonoBehaviour
     }
 
     void ExitGame() {
-        return;
+        Application.Quit();
     }
 }
 
