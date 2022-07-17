@@ -6,17 +6,6 @@ using UnityEngine;
 public class GameControl : MonoBehaviour
 // Main program that contains basic gameplay loop. 
 {
-    public enum GameStates { // each automatically assigned a value on 0-(len-1)
-        GameStart,
-        DiceSelection,
-        TileSelection,
-        Moving,
-        GameOver,
-    }
-
-    // The Deck
-    [SerializeField] private Deck theDeck;
-
     // Settings
     public static int numDie = 3; // Number of dice that are rolled at once
     public static int gridSize = 4; // Number of tiles in each dimension
@@ -29,8 +18,17 @@ public class GameControl : MonoBehaviour
     private Deck deck;
 
     // State
+    public enum GameStates { // each automatically assigned a value on 0-(len-1)
+
+        GameStart,
+        DiceSelection,
+        TileSelection,
+        Moving,
+        GameOver,
+    }
+
+    private GameStates currentState; // above enumeration 
     private int playerTurn; // 1 = Player 1 turn, 2 = Player 2 turn
-    private GameStates currentState;
     private InputStates currentInput;
 
     private int lastSelectedDie = 0;
@@ -39,15 +37,16 @@ public class GameControl : MonoBehaviour
     private int selectedTile = 0; // index of coordinate in move
 
     private bool[] currentActiveDie;
-    private GameObject[] currentDice;
+    // private GameObject[] currentDice;
     private List<Vector2Int>[] currentMoves;
-    
+
+    // Player States
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    private GameObject[] player1Dice = new GameObject[3];
+    // private GameObject[] player1Dice = new GameObject[3];
     private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
 
     private bool[] player2ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    private GameObject[] player2Dice = new GameObject[3];
+    // private GameObject[] player2Dice = new GameObject[3];
     private List<Vector2Int>[] player2Moves = new List<Vector2Int>[numDie];
 
     void Start()
@@ -65,8 +64,6 @@ public class GameControl : MonoBehaviour
         grid.GenerateTiles();
         GenerateDie(1);
         GenerateDie(2);
-        player1Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
-        player2Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
     }
 
     // Update is called once per frame
@@ -90,12 +87,12 @@ public class GameControl : MonoBehaviour
 
         if (playerTurn == 1) {
             currentActiveDie = player1ActiveDie;
-            currentDice = player1Dice;
+            // currentDice = player1Dice;
             currentMoves = player1Moves;
         }
         else {
             currentActiveDie = player2ActiveDie;
-            currentDice = player2Dice;
+            // currentDice = player2Dice;
             currentMoves = player2Moves;
         }
     }
@@ -104,8 +101,6 @@ public class GameControl : MonoBehaviour
         currentState = GameStates.DiceSelection;
         if (player1ActiveDie.Count<bool>() <= 0) GenerateDie(1);
         if (player2ActiveDie.Count<bool>() <= 0) GenerateDie(2);
-
-        GenerateDie(2);
     }
 
     void DiceSelectionTick(InputStates input) {
@@ -134,6 +129,7 @@ public class GameControl : MonoBehaviour
 
     void RunTileSelection() {
         currentState = GameStates.TileSelection;
+
     }
 
     void TileSelectionTick(InputStates input) {
@@ -171,21 +167,22 @@ public class GameControl : MonoBehaviour
 
     void GenerateDie(int playerTurn) {
         SetPlayerVariables(playerTurn);
-        if (playerTurn == 1) {
-            for (int i = 0; i < numDie; i++) {
-                player1ActiveDie[i] = true;
-                player1Dice[i] = GetDice();
 
-            }
+        List<Vector2Int> moveset;
+        Transform diceTransform;
+        GameObject dice;
+        for (int i = 0; i < numDie; i++) {
+            currentActiveDie[i] = true;
+            (moveset, diceTransform) = GetDiceInfo();
         }
         return;
     }
 
-    List GetDice() {
+    (List<Vector2Int>, Transform) GetDiceInfo() {
         GameObject dice = deck.RollTheDie();
-        ValidMoves moveset = dice.GetComponent<ValidMoves>();
-        List<Vector2Int> movesPackage = moveset.GetMoves();
-        
+        Transform diceTransform = dice.GetComponent<Transform>();
+        List<Vector2Int> moveset = dice.GetComponent<ValidMoves>().GetMoves();
+        return (moveset, diceTransform);
     }
 }
 
