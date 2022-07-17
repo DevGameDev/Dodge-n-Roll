@@ -36,18 +36,18 @@ public class GameControl : MonoBehaviour
     private int lastSelectedTile = 0;
     private int selectedTile = 0; // index of coordinate in move
 
-    private bool[] currentActiveDie;
-    // private GameObject[] currentDice;
-    private List<Vector2Int>[] currentMoves;
+    private bool[] currentActiveDie = Enumerable.Repeat(true, numDie).ToArray();
+    private Transform[] currentDieTransform = new Transform[numDie];
+    private List<(int, int)>[] currentMoves = new List<(int, int)>[numDie];
 
     // Player States
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    // private GameObject[] player1Dice = new GameObject[3];
-    private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
+    private Transform[] player1DieTransform = new Transform[numDie];
+    private List<(int, int)>[] player1Moves = new List<(int, int)>[numDie];
 
     private bool[] player2ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    // private GameObject[] player2Dice = new GameObject[3];
-    private List<Vector2Int>[] player2Moves = new List<Vector2Int>[numDie];
+    private Transform[] player2DieTransform = new Transform[numDie];
+    private List<(int, int)>[] player2Moves = new List<(int, int)>[numDie];
 
     void Start()
     {
@@ -87,12 +87,12 @@ public class GameControl : MonoBehaviour
 
         if (playerTurn == 1) {
             currentActiveDie = player1ActiveDie;
-            // currentDice = player1Dice;
+            currentDiceTransform = player1DieTransform;
             currentMoves = player1Moves;
         }
         else {
             currentActiveDie = player2ActiveDie;
-            // currentDice = player2Dice;
+            currentDiceTransform = player2DieTransform;
             currentMoves = player2Moves;
         }
     }
@@ -168,20 +168,35 @@ public class GameControl : MonoBehaviour
     void GenerateDie(int playerTurn) {
         SetPlayerVariables(playerTurn);
 
-        List<Vector2Int> moveset;
+        List<(int, int)> moveset = new List<(int, int)>();
+        List<(int, int)> moveCoordinates = new List<(int, int)>();
         Transform diceTransform;
-        GameObject dice;
         for (int i = 0; i < numDie; i++) {
             currentActiveDie[i] = true;
-            (moveset, diceTransform) = GetDiceInfo();
+
+            moveset.Clear();
+            moveCoordinates.Clear();
+            while (moveCoordinates.Count < 1) {
+                (moveset, diceTransform) = GetDiceInfo();
+                moveCoordinates = grid.GetValidMoveCoordinates(playerTurn, moveset);
+            }
+            currentMoves[i] = moveCoordinates;
+            currentDiceTransform
         }
         return;
     }
 
-    (List<Vector2Int>, Transform) GetDiceInfo() {
+    (List<(int, int)>, Transform) GetDiceInfo() {
         GameObject dice = deck.RollTheDie();
         Transform diceTransform = dice.GetComponent<Transform>();
-        List<Vector2Int> moveset = dice.GetComponent<ValidMoves>().GetMoves();
+        List<Vector2Int> movePackage = dice.GetComponent<ValidMoves>().GetMoves();
+        
+        (int, int) move;
+        List<(int, int)> moveset = new List<(int, int)>();
+        foreach (Vector2Int movePack in movePackage) {
+            move = (movePack.x, movePack.y);
+            moveset.Add(move);
+        }
         return (moveset, diceTransform);
     }
 }

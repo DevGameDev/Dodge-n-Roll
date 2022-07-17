@@ -28,18 +28,22 @@ public class GridControl : MonoBehaviour
         }
     }
 
-    List<(int, int)> GetMoveCoordinates((int, int) playerCoordinates, List<(int, int)> offsets) {
-        (int playerX, int playerZ) = playerCoordinates;
+    public List<(int, int)> GetValidMoveCoordinates(int playerTurn, List<(int, int)> offsets) {
+        int playerX, playerY;
+        if (playerTurn == 1) (playerX, playerY) = _player1Position;
+        else (playerX, playerY) = _player2Position;
 
         List<(int, int)> moveCoordinates = new List<(int, int)>();
-        foreach ((int moveX, int moveZ) in offsets) {
+        foreach ((int moveX, int moveY) in offsets) {
             int moveCoordinateX = (playerX - moveX);
             if (moveCoordinateX < 0 || moveCoordinateX > _gridTileWidth) continue;
 
-            int moveCoordinateZ = (playerZ - moveZ);
-            if (moveCoordinateZ < 0 || moveCoordinateZ > _gridTileWidth) continue;
+            int moveCoordinateY = (playerY - moveY);
+            if (moveCoordinateY < 0 || moveCoordinateY > _gridTileWidth) continue;
 
-            moveCoordinates.Add((moveCoordinateX, moveCoordinateZ));
+            if (moveCoordinateX == playerX && moveCoordinateY == playerY) continue;
+
+            moveCoordinates.Add((moveCoordinateX, moveCoordinateY));
         }
         return moveCoordinates;
     }

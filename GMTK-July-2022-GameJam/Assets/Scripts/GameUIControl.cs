@@ -9,6 +9,7 @@ public class GameUIControl : MonoBehaviour
     private Transform tileOptions = GameObject.Find("tileOptions").GetComponent<Transform>();
     // private Transform tileHighlights = GameObject.Find("gridHightlightsPositions").GetComponent<Transform>();
     private Transform diePiecePositions = GameObject.Find("dicePositions").GetComponent<Transform>();
+    private Transform dieSprites = GameObject.Find("Deck").GetComponent<Transform>();
 
     private ((int, int), SpriteRenderer)[] tilesBasic = new ((int, int), SpriteRenderer)[GameControl.gridSize]; // ((x, y), (characterSprite, tileHighlightSprite))
     private ((int, int), (SpriteRenderer, SpriteRenderer))[] tiles = new ((int, int), (SpriteRenderer, SpriteRenderer))[GameControl.gridSize]; // ((x, y), (characterSprite, tileHighlightSprite))
@@ -42,6 +43,10 @@ public class GameUIControl : MonoBehaviour
             else if (pieceName.StartsWith("diceShadow")) {
                 dieShadows[shadowIndex] = diePiece.GetComponent<SpriteRenderer>();
             }
+        }
+
+        foreach (Transform dieSprite in dieSprites) {
+            dieSprite.position = new Vector3(0, 0, 0);
         }
         // TODO: Display game start overlay
         return;
