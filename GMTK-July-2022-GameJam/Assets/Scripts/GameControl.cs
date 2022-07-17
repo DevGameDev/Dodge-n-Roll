@@ -160,5 +160,49 @@ public class GameControl : MonoBehaviour
     }
 
 
+
+    // After dotselection is run and the dot is selected:
+
+    /*
+    // First, we need a "bool HasValidMove(List<Vector2Int> listOfMovesToCheck)" function that takes in a list of moves and returns if at least one is valid
+    // Run this once after each player's turn.
+    void CheckAndReroll(){
+
+        if (it was player 1's turn) {
+            
+            // Set accumulator
+            i = 0;
+
+            // For each item of player1ActiveDie...
+            foreach(bool active in player1ActiveDie) {
+
+                // If current bool is true AND at least one valid move exists in the corresponding gameObject, break the function. We found at least one move the player can make.
+                if (active && HasValidMove(player1Moves[i].GetComponent<ValidMoves>().GetMoves())) {
+                    return
+                }
+                
+                // Increment the accumulator
+                i++;
+            }
+
+            // If we made it through all the loops, then there couldn't have been a valid move. So reset the player's hand.
+            player1Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
+        }
+
+        // Ditto for player 2
+        if (it was player 2's turn) {
+            i = 0;
+            foreach(bool active in player1ActiveDie) {
+                if (active && HasValidMove(player2Moves[i].GetComponent<ValidMoves>().GetMoves())) {
+                    return
+                }
+                
+                i++;
+            }
+
+            player2Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
+        }
+    }
+    */
 }
 
