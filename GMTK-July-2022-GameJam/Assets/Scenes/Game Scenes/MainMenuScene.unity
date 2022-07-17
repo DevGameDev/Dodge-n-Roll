@@ -216,26 +216,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 652208259}
-  - component: {fileID: 652208258}
+  - component: {fileID: 652208260}
+  - component: {fileID: 652208261}
   m_Layer: 0
-  m_Name: Script Object
+  m_Name: MainMenuController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &652208258
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652208257}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4fa6eeca390e4449bec0d852f5aa1ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &652208259
 Transform:
   m_ObjectHideFlags: 0
@@ -251,6 +240,33 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &652208260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652208257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf5dec534ee7254cb21b037db7f3986, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentInput: 0
+--- !u!114 &652208261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652208257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7912290609e0e554aba3c42f6186edad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controlID: 
+  currentInput: 0
 --- !u!1 &1189508126
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,8 +351,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 652208258}
-        m_TargetAssemblyTypeName: MenuController, Assembly-CSharp
+      - m_Target: {fileID: 652208260}
+        m_TargetAssemblyTypeName: MainMenuControl, Assembly-CSharp
         m_MethodName: PlayButton
         m_Mode: 1
         m_Arguments:

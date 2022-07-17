@@ -2,24 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MainMenuControl : MonoBehaviour
-// Main program that contains basic gameplay loop. 
 {
-    // State
-    public InputStates currentInput = InputStates.Idle; // enumeration index
-
-    InputControl controls = new InputControl();
+    InputControl controls;
+    InputStates currentInput;
 
     void Start()
     {
-
+        controls = GameObject.Find("MainMenuController").GetComponent<InputControl>();
+        currentInput = InputStates.Idle;
     }
 
     // Update is called once per frame
     void Update()
     {
-        currentInput = controls.currentInput;
+        currentInput = controls.ProcessInput();
+    }
+
+    public void PlayButton() {
+        SceneManager.LoadScene("GameplayScene");
     }
 }
-
