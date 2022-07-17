@@ -164,7 +164,7 @@ GameObject:
   m_Component:
   - component: {fileID: 103439238}
   m_Layer: 0
-  m_Name: Grid coordinates
+  m_Name: gridCoordinates
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -211,7 +211,7 @@ GameObject:
   m_Component:
   - component: {fileID: 104584706}
   m_Layer: 5
-  m_Name: Dice (2)
+  m_Name: dice2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -433,7 +433,7 @@ GameObject:
   m_Component:
   - component: {fileID: 526726653}
   m_Layer: 5
-  m_Name: Dice (3)
+  m_Name: dice3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -931,7 +931,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1247682791}
   m_Layer: 5
-  m_Name: Dice (1)
+  m_Name: dice1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -998,7 +998,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1303455930}
   m_Layer: 5
-  m_Name: Arrow (2)
+  m_Name: arrow2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1034,7 +1034,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1388315703}
   m_Layer: 5
-  m_Name: Arrow (1)
+  m_Name: arrow1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1070,7 +1070,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1512316400}
   m_Layer: 5
-  m_Name: Dice Positions
+  m_Name: dicePositions
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1313,7 +1313,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1915009559}
   m_Layer: 5
-  m_Name: Arrow (3)
+  m_Name: arrow3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
