@@ -14,35 +14,25 @@ public enum InputStates
 
 public class InputControl : MonoBehaviour
 {
-    public string controlID;
 
-    public InputStates currentInput;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // TODO return inputState enumeration element found in GameMaster
     public InputStates ProcessInput()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if ((Input.GetKeyDown(KeyCode.RightArrow)) || (Input.GetKeyDown(KeyCode.D)) || (Input.GetMouseButtonDown(1)))
         {
             return InputStates.Right;
         }
 
-        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        else if ((Input.GetKeyDown(KeyCode.LeftArrow)) || (Input.GetKeyDown(KeyCode.A)) || (Input.GetMouseButtonDown(0)))
         {
             return InputStates.Left;
         }
 
-        else if (Input.GetKeyDown(KeyCode.Return))
+        else if ((Input.GetKeyDown(KeyCode.Return)) || (Input.GetKeyDown(KeyCode.UpArrow)) || (Input.GetKeyDown(KeyCode.W)) || (Input.GetMouseButtonDown(2)))
         {
             return InputStates.Enter;
         }
 
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if ((Input.GetKeyDown(KeyCode.S)) || (Input.GetKeyDown(KeyCode.DownArrow)) || (Input.GetKeyDown(KeyCode.Space)))
         {
             return InputStates.Back;
         }
