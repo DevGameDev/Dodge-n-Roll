@@ -62,8 +62,8 @@ public class GameControl : MonoBehaviour
 
         ui.HandleGameLoad();
         grid.GenerateTiles();
-        GenerateDie(1);
-        GenerateDie(2);
+        GenerateDie();
+        GenerateDie();
     }
 
     // Update is called once per frame
@@ -80,27 +80,29 @@ public class GameControl : MonoBehaviour
         if (input == InputStates.Enter) {
             ui.HandleGameStart();
             RunDiceSelection();
+            ui.DisplayDie(currentActiveDie, currentDieTransform);
         }
     }
 
     void SetPlayerVariables(int playerTurn) {
-
         if (playerTurn == 1) {
             currentActiveDie = player1ActiveDie;
-            currentDiceTransform = player1DieTransform;
+            currentDieTransform = player1DieTransform;
             currentMoves = player1Moves;
         }
         else {
             currentActiveDie = player2ActiveDie;
-            currentDiceTransform = player2DieTransform;
+            currentDieTransform = player2DieTransform;
             currentMoves = player2Moves;
         }
     }
 
     void RunDiceSelection() {
         currentState = GameStates.DiceSelection;
-        if (player1ActiveDie.Count<bool>() <= 0) GenerateDie(1);
-        if (player2ActiveDie.Count<bool>() <= 0) GenerateDie(2);
+
+        SetPlayerVariables(playerTurn);
+        if (currentActiveDie.Count<bool>() <= 0) GenerateDie();
+
     }
 
     void DiceSelectionTick(InputStates input) {
@@ -115,7 +117,7 @@ public class GameControl : MonoBehaviour
                 selectedDie--;
                 if (selectedDie < 0) selectedDie = numDie-1;
             }
-            if (lastSelectedDie != selectedDie) ui.HandleHoverDie(lastSelectedDie, selectedDie);
+            ui.HandleHoverDie(lastSelectedDie, selectedDie);
         }
         else if (input == InputStates.Right) {
             selectedDie++;
@@ -123,7 +125,7 @@ public class GameControl : MonoBehaviour
                 selectedDie++;
                 if (selectedDie >= 0) selectedDie = 0;
             }
-            if (lastSelectedDie != selectedDie) ui.HandleHoverDie(lastSelectedDie, selectedDie);
+            ui.HandleHoverDie(lastSelectedDie, selectedDie);
         }
     }
 
@@ -158,32 +160,32 @@ public class GameControl : MonoBehaviour
 
     void ExecuteMove() {
         currentState = GameStates.Moving;
-        return;
     }
 
     void ExitGame() {
         Application.Quit();
     }
 
-    void GenerateDie(int playerTurn) {
-        SetPlayerVariables(playerTurn);
-
+    void GenerateDie() {
         List<(int, int)> moveset = new List<(int, int)>();
         List<(int, int)> moveCoordinates = new List<(int, int)>();
         Transform diceTransform;
+        bool successfulDice;
         for (int i = 0; i < numDie; i++) {
             currentActiveDie[i] = true;
 
             moveset.Clear();
             moveCoordinates.Clear();
-            while (moveCoordinates.Count < 1) {
+            successfulDice = false;
+            while (!successfulDice) {
                 (moveset, diceTransform) = GetDiceInfo();
                 moveCoordinates = grid.GetValidMoveCoordinates(playerTurn, moveset);
+                if (moveCoordinates.Count < 1) continue;
+                currentMoves[i] = moveCoordinates;
+                currentDieTransform[i] = diceTransform;
+                successfulDice = true;
             }
-            currentMoves[i] = moveCoordinates;
-            currentDiceTransform
         }
-        return;
     }
 
     (List<(int, int)>, Transform) GetDiceInfo() {

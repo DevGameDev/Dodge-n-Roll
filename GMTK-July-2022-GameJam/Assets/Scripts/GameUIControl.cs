@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class GameUIControl : MonoBehaviour
 {
+    // Settings
+    Vector3 hiddenPosition = new Vector3(0, 0, 0);
+
     private Transform tileCoordinates = GameObject.Find("gridCoordinates").GetComponent<Transform>();
     private Transform tileOptions = GameObject.Find("tileOptions").GetComponent<Transform>();
     // private Transform tileHighlights = GameObject.Find("gridHightlightsPositions").GetComponent<Transform>();
@@ -14,9 +17,9 @@ public class GameUIControl : MonoBehaviour
     private ((int, int), SpriteRenderer)[] tilesBasic = new ((int, int), SpriteRenderer)[GameControl.gridSize]; // ((x, y), (characterSprite, tileHighlightSprite))
     private ((int, int), (SpriteRenderer, SpriteRenderer))[] tiles = new ((int, int), (SpriteRenderer, SpriteRenderer))[GameControl.gridSize]; // ((x, y), (characterSprite, tileHighlightSprite))
 
-    private SpriteRenderer[] die = new SpriteRenderer[GameControl.numDie];
-    private SpriteRenderer[] arrows = new SpriteRenderer[GameControl.numDie];
-    private SpriteRenderer[] dieShadows = new SpriteRenderer[GameControl.numDie];
+    private Transform[] dieLocations = new Transform[GameControl.numDie];
+    private SpriteRenderer[] arrowLocations = new SpriteRenderer[GameControl.numDie];
+    private SpriteRenderer[] shadowLocations = new SpriteRenderer[GameControl.numDie];
 
     public void HandleGameLoad() {
         // Generate Game Positions
@@ -32,21 +35,21 @@ public class GameUIControl : MonoBehaviour
         foreach (Transform diePiece in diePiecePositions) {
             string pieceName = diePiece.gameObject.name;
             if (pieceName.StartsWith("dice")) {
-                die[dieIndex] = diePiece.GetComponent<SpriteRenderer>();
+                dieLocations[dieIndex] = diePiece.GetComponent<Transform>();
                 dieIndex++;
                 continue;
             }
             else if (pieceName.StartsWith("arrow")) {
-                arrows[arrowIndex] = diePiece.GetComponent<SpriteRenderer>();
+                arrowLocations[arrowIndex] = diePiece.GetComponent<SpriteRenderer>();
                 arrowIndex++;
             }
             else if (pieceName.StartsWith("diceShadow")) {
-                dieShadows[shadowIndex] = diePiece.GetComponent<SpriteRenderer>();
+                shadowLocations[shadowIndex] = diePiece.GetComponent<SpriteRenderer>();
             }
         }
 
         foreach (Transform dieSprite in dieSprites) {
-            dieSprite.position = new Vector3(0, 0, 0);
+            dieSprite.position = hiddenPosition;
         }
         // TODO: Display game start overlay
         return;
@@ -57,11 +60,21 @@ public class GameUIControl : MonoBehaviour
         return;
     }
 
-    public void SpawnDie() {
+    public void HideDie(Transform[] dieTransform) {
+        for (int i = 0; i < GameControl.numDie; i++) {
+            dieTransform[i].position = hiddenPosition;
+        }
+    }
+
+    public void DisplayDie(bool[] activeDie, Transform[] dieTransform) {
+        for (int i = 0; i < GameControl.numDie; i++) {
+            dieTransform[i].position = dieLocations[i].position;
+        }
         return;
     }
 
     public void HandleHoverDie(int lastSelectedDie, int selectedDie) {
+        
         // TODO: Move selection arrow
         // TODO: Make old highlighted tiles invisble
         // TODO: Make new highlighted tiles visble
