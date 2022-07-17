@@ -9,7 +9,7 @@ public class GameControl : MonoBehaviour
     public enum GameStates { // each automatically assigned a value on 0-(len-1)
         GameStart,
         DiceSelection,
-        DotSelection,
+        TileSelection,
         Moving,
         GameOver,
     }
@@ -20,28 +20,46 @@ public class GameControl : MonoBehaviour
     // Settings
     private static int numDie = 3; // Number of dice that are rolled at once
 
+    // GameObject / Modules
+    GameObject gameController;
+    private InputControl controls;
+    private GameUIControl ui;
+    private GridControl grid;
+
     // State
-    private InputControl controls = new InputControl();
-    private GridControl grid = new GridControl();
+    private int playerTurn; // 1 = Player 1 turn, 2 = Player 2 turn
+    private GameStates currentState;
+    private InputStates currentInput;
 
-    private int playerTurn = 1; // 1 = Player 1 turn, 2 = Player 2 turn
-    private GameStates currentState = GameStates.GameStart; // enumeration index
-    private InputStates currentInput = InputStates.Idle; // enumeration index
+    private int lastSelectedDie = 0;
+    private int selectedDie = 0; // selected die/move
+    private int lastSelectedTile = 0;
+    private int selectedTile = 0; // index of coordinate in move
 
-    // private int selectedDie = 0; // selected die/move
-    // private int selectedDot = 0; // index of coordinate in move
-
+    private bool[] currentActiveDie;
+    private GameObject[] currentDice;
+    private List<Vector2Int>[] currentMoves;
+    
     private bool[] player1ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
     private GameObject[] player1Dice = new GameObject[3];
-
+    private List<Vector2Int>[] player1Moves = new List<Vector2Int>[numDie];
 
     private bool[] player2ActiveDie = Enumerable.Repeat(true, numDie).ToArray();
-    private List<Vector2Int>[] player2Moves = new List<Vector2Int>[numDie];
     private GameObject[] player2Dice = new GameObject[3];
+    private List<Vector2Int>[] player2Moves = new List<Vector2Int>[numDie];
 
     void Start()
     {
+        gameController = GameObject.Find("GameController");
+        controls = gameController.GetComponent<InputControl>();
+        ui = gameController.GetComponent<GameUIControl>();
+        grid = gameController.GetComponent<GridControl>();
+
+        currentState = GameStates.GameStart;
+        currentInput = InputStates.Idle;
+        playerTurn = 1;
+
+        ui.HandleGameLoad();
         grid.GenerateTiles();
         player1Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
         player2Dice = new GameObject[] { theDeck.RollTheDie(), theDeck.RollTheDie(), theDeck.RollTheDie() };
@@ -53,44 +71,85 @@ public class GameControl : MonoBehaviour
         currentInput = controls.ProcessInput();
         if (currentInput == InputStates.Exit) ExitGame();
         else if (currentState == GameStates.GameStart) GameStartTick(currentInput);
-        else if (currentState == GameStates.DiceSelection) DiceSelectionTick(currentInput, playerTurn);
-        else if (currentState == GameStates.DotSelection) DotSelectionTick(currentInput, playerTurn);
+        else if (currentState == GameStates.DiceSelection) DiceSelectionTick(currentInput);
+        else if (currentState == GameStates.TileSelection) TileSelectionTick(currentInput);
     }
 
     void GameStartTick(InputStates input) {
-        if (input == InputStates.Enter) RunDiceSelection();
+        if (input == InputStates.Enter) {
+            ui.HandleGameStart();
+            RunDiceSelection();
+        }
     }
 
     void RunDiceSelection() {
         currentState = GameStates.DiceSelection;
-        
         if (playerTurn == 1) {
-            GameObject[] die = player1Dice;
-            bool[] activeDie = player1ActiveDie;
+            currentActiveDie = player1ActiveDie;
+            currentDice = player1Dice;
+            currentMoves = player1Moves;
         }
         else {
-            GameObject[] die = player2Dice;
-            bool[] activeDie = player2ActiveDie;
+            currentActiveDie = player2ActiveDie;
+            currentDice = player2Dice;
+            currentMoves = player2Moves;
         }
-        for (int i = 0; i < numDie; i++) {
-            
+        // TODO: Generate Dice for each player if necessary
+    }
+
+    void DiceSelectionTick(InputStates input) {
+        lastSelectedDie = selectedDie;
+        if (input == InputStates.Enter) {
+            ui.HandleSelectDie(selectedDie);
+            RunTileSelection();
         }
-
+        else if (input == InputStates.Left) {
+            selectedDie--;
+            while (selectedDie < 0 || !currentActiveDie[selectedDie]) {
+                selectedDie--;
+                if (selectedDie < 0) selectedDie = numDie-1;
+            }
+            if (lastSelectedDie != selectedDie) ui.HandleHoverDie(lastSelectedDie, selectedDie);
+        }
+        else if (input == InputStates.Right) {
+            selectedDie++;
+            while (selectedDie >= numDie || !currentActiveDie[selectedDie]) {
+                selectedDie++;
+                if (selectedDie >= 0) selectedDie = 0;
+            }
+            if (lastSelectedDie != selectedDie) ui.HandleHoverDie(lastSelectedDie, selectedDie);
+        }
     }
 
-    void DiceSelectionTick(InputStates input, int playerTurn) {
-        if (input == InputStates.Enter) RunDotSelection();
+    void RunTileSelection() {
+        currentState = GameStates.TileSelection;
     }
 
-    void RunDotSelection() {
-        currentState = GameStates.DotSelection;
+    void TileSelectionTick(InputStates input) {
+        lastSelectedTile = selectedTile;
+        if (input == InputStates.Enter) {
+            ui.HandleSelectTile(selectedTile);
+            ExecuteMove();
+        }
+        else if (input == InputStates.Left) {
+            selectedTile--;
+            while (selectedDie < 0 || !currentActiveDie[selectedDie]) {
+                selectedDie--;
+                if (selectedDie < 0) selectedDie = numDie-1;
+            }
+            if (lastSelectedDie != selectedDie) ui.HandleHoverDie(lastSelectedDie, selectedDie);
+        }
+        else if (input == InputStates.Right) {
+            selectedDie++;
+            while (selectedDie >= numDie || !currentActiveDie[selectedDie]) {
+                selectedDie++;
+                if (selectedDie >= 0) selectedDie = 0;
+            }
+            if (lastSelectedDie != selectedDie) ui.HandleHoverDie(lastSelectedDie, selectedDie);
+        }
     }
 
-    void DotSelectionTick(InputStates input, int playerturn) {
-        if (input == InputStates.Enter) RunMove();
-    }
-
-    void RunMove() {
+    void ExecuteMove() {
         currentState = GameStates.Moving;
         return;
     }
