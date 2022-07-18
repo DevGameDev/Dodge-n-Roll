@@ -2,17 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridControl : MonoBehaviour
-// Defines the attributes and logic of the grid system. Currently limited to square grid/tiles.
-// Dimensions must be manually altered in this script.
+public class Grid : MonoBehaviour
 {
     // Manual-Entry information
     private static int _gridTileWidth = GameControl.gridSize; // Number of tiles per side
 
     // Generated grid information
     private (int, int)[] _tileCoordinates;
-    public (int, int) _player1Position = (0, 0);
-    public (int, int) _player2Position = (_gridTileWidth-1, _gridTileWidth-1);
 
     public void GenerateTiles() {
         float tileWorldSize = _gridTileWidth / _gridTileWidth;
@@ -28,10 +24,9 @@ public class GridControl : MonoBehaviour
         }
     }
 
-    public List<(int, int)> GetValidMoveCoordinates(int playerTurn, List<(int, int)> offsets) {
+    public List<(int, int)> GetValidMoveCoordinates((int, int) playerCoordinate, List<(int, int)> offsets) {
         int playerX, playerY;
-        if (playerTurn == 1) (playerX, playerY) = _player1Position;
-        else (playerX, playerY) = _player2Position;
+        (playerX, playerY) = playerCoordinate;
 
         List<(int, int)> moveCoordinates = new List<(int, int)>();
         foreach ((int moveX, int moveY) in offsets) {
@@ -52,10 +47,5 @@ public class GridControl : MonoBehaviour
         if (moveCoordinates.Count > 0) return true;
         return false;
     }
-
-    // bool ExecuteMove((int, int) playerCoordinates, List<(int, int)> moveCoordinates) {
-    //     if (!HasValidMove(moveCoordinates)) {
-    //     }
-    // }
 }
 

@@ -32,6 +32,9 @@ public class GameUIControl : MonoBehaviour
     private Sprite cowFront;
     private Sprite cowBack;
 
+    private Sprite player1Sprite;
+    private Sprite player2Sprite;
+
     // ========== Initialization ==========
     public void LoadGame() {
         // Find tile images
@@ -68,7 +71,10 @@ public class GameUIControl : MonoBehaviour
             dieSprite.position = hiddenPosition;
         }
         startScreen.enabled = true;
-        return;
+        LoadSprites();
+
+        player1Sprite = cowFront;
+        player2Sprite = cowBack;
     }
 
     public void LoadSprites() {
@@ -84,21 +90,6 @@ public class GameUIControl : MonoBehaviour
 
     public void StartGame() {
         startScreen.enabled = false;
-        return;
-    }
-    
-    public void SelectTile(int selectedTile) {
-        foreach (((int, int) _, Image tileImage) in tiles) {
-            tileImage.enabled = false;
-        }
-        // TODO: Move character
-        // TODO: Poof animation?
-    }
-
-    public void HideDie(Transform[] dieTransform) {
-        for (int i = 0; i < GameControl.numDie; i++) {
-            dieTransform[i].position = hiddenPosition;
-        }
     }
 
     public void DisplayDie(bool[] activeDie, GameObject[] die) {
@@ -110,12 +101,30 @@ public class GameUIControl : MonoBehaviour
         }
     }
 
-    public void HoverDie(int lastHoveredDie, int hoveredDie, List<(int, int)> moveCoordinates) {
-        if (lastHoveredDie != hoveredDie) arrows[lastHoveredDie].enabled = false;
+    public void HoverDie(int lastHoveredDie, int hoveredDie, List<(int, int)> lastCoordinates, List<(int, int)> moveCoordinates) {
+        arrows[lastHoveredDie].enabled = false;
         arrows[hoveredDie].enabled = true;
-        
+
+        HideTiles(lastCoordinates);
         ShowTiles(moveCoordinates);
     } 
+
+    public void ShowTiles(List<(int, int)> tileCoordinates) {
+        foreach (((int, int) tileCoordinate, Image tileImage) in tiles) {
+            if (tileCoordinates.Contains(tileCoordinate)) {
+                tileImage.sprite = tileHighlight;
+                tileImage.enabled = true;
+            }
+        }
+    }
+
+    public void HideTiles(List<(int, int)> tileCoordinates) {
+        foreach (((int, int) tileCoordinate, Image tileImage) in tiles) {
+            if (tileCoordinates.Contains(tileCoordinate)) {
+                tileImage.enabled = false;
+            }
+        }
+    }
 
     public void SelectDie(int selectedDie, List<(int, int)> moveCoordinates) {
         Color tempColor = shadows[selectedDie].color;
@@ -130,16 +139,11 @@ public class GameUIControl : MonoBehaviour
         shadows[selectedDie].color = new Color(tempColor.r, tempColor.g, tempColor.b, shadowAlphaBase);
 
         arrows[selectedDie].enabled = false;
-
     }
 
-    public void ShowTiles(List<(int, int)> moveCoordinates) {
-        foreach (((int, int) tileCoordinate, Image tileImage) in tiles) {
-            if (moveCoordinates.Contains(tileCoordinate)) {
-                tileImage.enabled = true;
-                tileImage.sprite = tileHighlight;
-            }
-            else tileImage.enabled = false;
+    public void HideDie(Transform[] dieTransform) {
+        for (int i = 0; i < GameControl.numDie; i++) {
+            dieTransform[i].position = hiddenPosition;
         }
     }
 
@@ -150,6 +154,26 @@ public class GameUIControl : MonoBehaviour
             if (tileCoordinate == lastHoveredTileCoord) tileImage.sprite = tileHighlight;
             if (tileCoordinate == hoveredTileCoord) tileImage.sprite = tileHighlightHovered;
         }
+    }
+    
+    public void SelectTile(int playerTurn, (int, int) playerCoordinate, int selectedTile, List<(int, int)> moveCoordinates) {
+        HideTiles(moveCoordinates);
+        (int, int) moveCoordinate = moveCoordinates[selectedTile];
+        Image playerImage = GetCoordinateImage(playerCoordinate);
+        playerImage.enabled = false;
+        Image moveImage = GetCoordinateImage(moveCoordinate);
+        if (playerTurn == 1) moveImage.sprite = player1Sprite;
+        else moveImage.sprite = player2Sprite;
+    }
+
+
+    // ========== Utility ==========
+
+    private Image GetCoordinateImage((int, int) coordinate) {
+        foreach (((int, int) tileCoordinate, Image tileImage) in tiles) {
+            if (coordinate == tileCoordinate) return tileImage;
+        }
+        return null;
     }
 
 }
