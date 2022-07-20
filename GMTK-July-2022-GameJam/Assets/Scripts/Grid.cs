@@ -1,6 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class Grid : MonoBehaviour
 {
@@ -30,11 +33,12 @@ public class Grid : MonoBehaviour
 
         List<(int, int)> moveCoordinates = new List<(int, int)>();
         foreach ((int moveX, int moveY) in offsets) {
-            int moveCoordinateX = (playerX - moveX);
-            if (moveCoordinateX < 0 || moveCoordinateX > _gridTileWidth) continue;
 
-            int moveCoordinateY = (playerY - moveY);
-            if (moveCoordinateY < 0 || moveCoordinateY > _gridTileWidth) continue;
+            int moveCoordinateX = (playerX + moveX);
+            if (moveCoordinateX < 0 || moveCoordinateX >= _gridTileWidth) continue;
+
+            int moveCoordinateY = (playerY + moveY);
+            if (moveCoordinateY < 0 || moveCoordinateY >= _gridTileWidth) continue;
 
             if (moveCoordinateX == playerX && moveCoordinateY == playerY) continue;
 

@@ -15,7 +15,6 @@ public class MainMenuControl : MonoBehaviour
     {
         controls = GameObject.Find("MainMenuController").GetComponent<InputControl>();
         currentInput = InputStates.Idle;
-        //TODO
         Button startButton = GetComponent<Button>();
     }
 

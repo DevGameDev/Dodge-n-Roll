@@ -40,6 +40,7 @@
      <Compile Include="Assets\Scripts\DeckChild.cs" />
      <Compile Include="Assets\Scripts\GameUIControl.cs" />
      <Compile Include="Assets\Scripts\KeyButton.cs" />
+     <Compile Include="Assets\Scripts\Grid.cs" />
      <Compile Include="Assets\Scripts\ValidMoves.cs" />
      <Compile Include="Assets\Scripts\GameControl.cs" />
      <Compile Include="Assets\Scripts\InputControl.cs" />
@@ -47,7 +48,6 @@
      <Compile Include="Assets\Scripts\TestSceneController.cs" />
      <Compile Include="Assets\Scripts\MainMenuControl.cs" />
      <Compile Include="Assets\Scripts\TileCtr.cs" />
-     <Compile Include="Assets\Scripts\Grid.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
