@@ -102,6 +102,7 @@ public class GameControl : MonoBehaviour
 
         List<(int, int)> noCoordinates = new List<(int, int)>();
         CheckDie();
+        UI.SetPlayerShadows(currentPlayerCoordinate, opposingPlayerCoordinate);
         UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
         UI.HoverDie(hoveredDieIndex, hoveredDieIndex, noCoordinates, currentValidMoveListArray[hoveredDieIndex], opposingPlayerCoordinate);
     }

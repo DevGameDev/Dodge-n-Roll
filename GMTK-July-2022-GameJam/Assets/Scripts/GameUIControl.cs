@@ -18,7 +18,8 @@ public class GameUIControl : MonoBehaviour
 
     // UI Elements
     private Image startScreen;
-    private Transform selectedPlayerShadow;
+    private Transform currentPlayerShadow;
+    private Transform opposingPlayerShadow;
     private Transform playerSkullIcon;
     private Transform hoveredPlayerSkullIcon;
     private ((int, int), Vector3, Image)[] tiles = new ((int, int), Vector3, Image)[GameControl.gridSize*GameControl.gridSize];
@@ -41,7 +42,8 @@ public class GameUIControl : MonoBehaviour
         diePiecePositions = GameObject.Find("dicePositions").GetComponent<Transform>();
         dieSprites = GameObject.Find("Deck").GetComponent<Transform>();
         startScreen = GameObject.Find("gameStart").GetComponent<Image>();
-        selectedPlayerShadow = GameObject.Find("selectedPlayerShadow").GetComponent<Transform>();
+        currentPlayerShadow = GameObject.Find("currentPlayerShadow").GetComponent<Transform>();
+        opposingPlayerShadow = GameObject.Find("opposingPlayerShadow").GetComponent<Transform>();
         playerSkullIcon = GameObject.Find("playerSkullIcon").GetComponent<Transform>();
         hoveredPlayerSkullIcon = GameObject.Find("hoveredPlayerSkullIcon").GetComponent<Transform>();
 
@@ -111,6 +113,13 @@ public class GameUIControl : MonoBehaviour
 
     public void StartGame() {
         startScreen.enabled = false;
+    }
+
+    public void SetPlayerShadows((int, int) currentPlayerCoordinate, (int, int) opposingPlayerCoordinate) {
+        foreach (((int, int) tileCoordinate, Vector3 tilePosition, Image tileImage) in tiles) {
+            if (tileCoordinate == currentPlayerCoordinate) currentPlayerShadow.position = tilePosition;
+            if (tileCoordinate == opposingPlayerCoordinate) opposingPlayerShadow.position = tilePosition;
+        }
     }
 
     public void DisplayDie(GameObject[] die, List<(int, int)>[] movesets, bool[] activeDie) {
