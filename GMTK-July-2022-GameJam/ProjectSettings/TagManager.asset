@@ -12,13 +12,13 @@ TagManager:
   - Water
   - UI
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Overlay
+  - UI front
+  - UI mid
+  - UI back
+  - tileObjects
+  - tileBackground
+  - background
   - 
   - 
   - 

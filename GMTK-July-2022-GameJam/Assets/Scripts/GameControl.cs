@@ -184,6 +184,17 @@ public class GameControl : MonoBehaviour
 
     // ===== Utility =====
 
+    IEnumerator FadeToColor(Color start, Color end, float duration) {
+        Color color;
+        for (float t = 0f; t < duration; t += Time.deltaTime) {
+            float normalizedTime = t/duration;
+            //right here, you can now use normalizedTime as the third parameter in any Lerp from start to end
+            Color color = Color.Lerp(start, end, normalizedTime);
+            yield return null;
+        }
+        color = end; //without this, the value will end at something like 0.9992367
+    }
+
     void ExitGame() {
         Application.Quit();
     }

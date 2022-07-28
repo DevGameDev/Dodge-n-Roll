@@ -8,7 +8,7 @@ public class GameUIControl : MonoBehaviour
 {
     // ========== Variables ==========
     // Settings
-    private Vector3 hiddenPosition = new Vector3(0, 0, 0);
+    private Vector3 hiddenPosition = new Vector3(-250, -250, -250);
     private Color shadowBaseColor = new Color(1f, 1f, 1f, 0.6f);
 
     // UI Collections
@@ -43,9 +43,13 @@ public class GameUIControl : MonoBehaviour
         dieSprites = GameObject.Find("Deck").GetComponent<Transform>();
         startScreen = GameObject.Find("gameStart").GetComponent<Image>();
         currentPlayerShadow = GameObject.Find("currentPlayerShadow").GetComponent<Transform>();
+        currentPlayerShadow.position = hiddenPosition;
         opposingPlayerShadow = GameObject.Find("opposingPlayerShadow").GetComponent<Transform>();
+        opposingPlayerShadow.position = hiddenPosition;
         playerSkullIcon = GameObject.Find("playerSkullIcon").GetComponent<Transform>();
+        playerSkullIcon.position = hiddenPosition;
         hoveredPlayerSkullIcon = GameObject.Find("hoveredPlayerSkullIcon").GetComponent<Transform>();
+        hoveredPlayerSkullIcon.position = hiddenPosition;
 
         // Find tile images
         int tileIndex = 0, dieIndex = 0, arrowIndex = 0, shadowIndex = 0;
@@ -100,7 +104,6 @@ public class GameUIControl : MonoBehaviour
             if (tileCoordinate == p1Coordinate) {
                 tileImage.sprite = cowRight;
                 tileImage.enabled = true;
-                tileImage.color = new Color(1f, 0.6f, 0.6f);
             }
             else if (tileCoordinate == p2Coordinate) {
                 tileImage.sprite = cowLeft;
@@ -112,6 +115,7 @@ public class GameUIControl : MonoBehaviour
     // ========== State Transitions ==========
 
     public void StartGame() {
+        // FadeToColor(startScreen, Color.white, Color.clear, 3);
         startScreen.enabled = false;
     }
 
@@ -196,16 +200,16 @@ public class GameUIControl : MonoBehaviour
         (int, int) hoveredTileCoord = moveCoordinates[hoveredTile];
         (int, int) lastHoveredTileCoord = moveCoordinates[lastHoveredTile];
         foreach (((int, int) tileCoordinate, Vector3 tilePosition, Image tileImage) in tiles) {
-            if (tileCoordinate == lastHoveredTileCoord) {
-                if (tileCoordinate == opposingPlayerCoordinate) hoveredPlayerSkullIcon.position = hiddenPosition;
-                else tileImage.sprite = tileHighlight;
-            }
-            else if (tileCoordinate == hoveredTileCoord) {
+            if (tileCoordinate == hoveredTileCoord) {
                 if (tileCoordinate == opposingPlayerCoordinate) {
                     playerSkullIcon.position = hiddenPosition;
                     hoveredPlayerSkullIcon.position = tilePosition;
                 }
                 else tileImage.sprite = tileHighlightHovered;
+            }
+            else if (tileCoordinate == lastHoveredTileCoord) {
+                if (tileCoordinate == opposingPlayerCoordinate) hoveredPlayerSkullIcon.position = hiddenPosition;
+                else tileImage.sprite = tileHighlight;
             }
         }
     }
@@ -221,17 +225,24 @@ public class GameUIControl : MonoBehaviour
     public void SelectTile(int playerTurn, (int, int) playerCoordinate, List<(int, int)> moveCoordinates, (int, int) moveCoordinate, (int, int) opposingPlayerCoordinate) {
         HideTiles(moveCoordinates, opposingPlayerCoordinate);
         Image playerImage = GetCoordinateImage(playerCoordinate);
-        playerImage.color = Color.white;
         playerImage.enabled = false;
         Sprite playerSprite = GetMovePlayerSprite(playerCoordinate, moveCoordinate);
         Image moveImage = GetCoordinateImage(moveCoordinate);
         moveImage.enabled = true;
         moveImage.sprite = playerSprite;
-        moveImage.color = Color.white;
         Image opposingImage = GetCoordinateImage(opposingPlayerCoordinate);
     }
 
     // ========== Utility ==========
+
+    IEnumerator FadeToColor(Image image, Color start, Color end, float duration) {
+        for (float t = 0f; t < duration; t += Time.fixedDeltaTime) {
+            float normalizedTime = t/duration;
+            image.color = Color.Lerp(start, end, normalizedTime);
+            yield return null;
+        }
+        image.color = end;
+    }
 
     private Image GetCoordinateImage((int, int) coordinate) {
         foreach (((int, int) tileCoordinate, Vector3 tilePosition, Image tileImage) in tiles) {
