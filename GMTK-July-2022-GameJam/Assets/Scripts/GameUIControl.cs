@@ -115,7 +115,7 @@ public class GameUIControl : MonoBehaviour
     // ========== State Transitions ==========
 
     public void StartGame() {
-        // FadeToColor(startScreen, Color.white, Color.clear, 3);
+        FadeToColor(startScreen, Color.white, Color.clear, 3);
         startScreen.enabled = false;
     }
 
