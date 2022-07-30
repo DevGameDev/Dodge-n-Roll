@@ -1,26 +1,44 @@
+/*
+Primary game control for Dodge 'n Roll. Contains the gameplay loop and logic for all game mechanics. Methods called 
+during the loop handle graphics and UI through GameUiControl. Input is handled through InputControl. 
+
+Loop runs as follows: GameControl.Update() calls the appropriate "tick" function per the value of "currentState"
+that handles input and delegates calls. Given an "enter" input, a state transition is initiated through the 
+corresponding "start" function, which handles all logic and UI pertaining to the switch. 
+
+Bounties: 
+- The moveset needs to be updated, gameplay is too predictable. (Devin has an idea)
+- On game end, the scene is simply reset. A fix likely includes:
+    - A game-end UI
+    - A system for multiple rounds
+    - Saving previous game results
+- Different sprites for each player
+- Music
+- Sound effects
+- Show both player's die on either side of board, instead of one at a time.
+*/
+
+
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameControl : MonoBehaviour
 {
-    // ========== Variables ==========
-
     // Settings
-    public static int numDie = 3; // Number of dice that are rolled at once
-    public static int gridSize = 4; // Number of tiles in each dimension
+    public static int NUMDIE = 3; // Number of die rolled at once
+    public static int GRIDSIZE = 4; // Number of tiles of grid in each dimension
 
-    // GameObject / Modules
+    // Modules
     private InputControl CONTROLS;
     private GameUIControl UI;
     private Grid GRID;
     private Deck DECK;
 
     // State
-    public enum GameStates { // each automatically assigned a value on 0-(len-1)
+    public enum GameStates {
         GameStart,
         DiceSelection,
         TileSelection,
@@ -29,8 +47,8 @@ public class GameControl : MonoBehaviour
     }
 
     private GameStates currentState;
+    private InputStates currentInput; // Enum in InputControl
     private int playerTurn = 1; // 1 = Player 1 turn, 2 = Player 2 turn
-    private InputStates currentInput;
 
     private int lastHoveredDieIndex = 0;
     private int hoveredDieIndex = 0; 
@@ -39,20 +57,24 @@ public class GameControl : MonoBehaviour
 
     private (int, int) currentPlayerCoordinate;
     private (int, int) opposingPlayerCoordinate;
-    private bool[] currentActiveDie = Enumerable.Repeat(false, numDie).ToArray();
-    private GameObject[] currentDiceObjects = new GameObject[numDie];
-    private List<(int, int)>[] currentValidMoveListArray = new List<(int, int)>[numDie];
+    private bool[] currentActiveDie = Enumerable.Repeat(false, NUMDIE).ToArray();
+    private GameObject[] currentDiceObjects = new GameObject[NUMDIE];
+    private List<(int, int)>[] currentValidMoveListArray = new List<(int, int)>[NUMDIE];
 
-    // Player States
+    // Player 1 state
     private (int, int) p1Coordinate = (0, 0);
-    private bool[] p1ActiveDie = Enumerable.Repeat(false, numDie).ToArray();
-    private GameObject[] p1DiceObjects = new GameObject[numDie];
-    private List<(int, int)>[] p1ValidMoveListArray = new List<(int, int)>[numDie];
+    private bool[] p1ActiveDie = Enumerable.Repeat(false, NUMDIE).ToArray();
+    private GameObject[] p1DiceObjects = new GameObject[NUMDIE];
+    private List<(int, int)>[] p1ValidMoveListArray = new List<(int, int)>[NUMDIE];
 
-    private (int, int) p2Coordinate = (gridSize-1, gridSize-1);
-    private bool[] p2ActiveDie = Enumerable.Repeat(false, numDie).ToArray();
-    private GameObject[] p2DiceObjects = new GameObject[numDie];
-    private List<(int, int)>[] p2ValidMoveListArray = new List<(int, int)>[numDie];
+    // Player 2 state
+    private (int, int) p2Coordinate = (GRIDSIZE-1, GRIDSIZE-1);
+    private bool[] p2ActiveDie = Enumerable.Repeat(false, NUMDIE).ToArray();
+    private GameObject[] p2DiceObjects = new GameObject[NUMDIE];
+    private List<(int, int)>[] p2ValidMoveListArray = new List<(int, int)>[NUMDIE];
+
+    // Utility
+    List<(int, int)> noCoordinate = new List<(int, int)>(); // Empty coordinate
 
     // ========== Initialization ==========
 
@@ -85,6 +107,8 @@ public class GameControl : MonoBehaviour
         else if (currentState == GameStates.TileSelection) TileSelectionTick(currentInput);
     }
 
+    // ========== Game Start ==========
+
     void GameStartTick(InputStates input) {
         if (input != InputStates.Idle) {
             UI.StartGame();
@@ -96,35 +120,32 @@ public class GameControl : MonoBehaviour
 
     void StartDiceSelection() {
         currentState = GameStates.DiceSelection;
-        Debug.Log(String.Format("turn = {0}, player coord = {1}", playerTurn, currentPlayerCoordinate));
         GetPlayerVariables();
-        Debug.Log(String.Format("turn = {0}, player coord = {1}", playerTurn, currentPlayerCoordinate));
 
-        List<(int, int)> noCoordinates = new List<(int, int)>();
         CheckDie();
         UI.SetPlayerShadows(currentPlayerCoordinate, opposingPlayerCoordinate);
         UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
-        UI.HoverDie(hoveredDieIndex, hoveredDieIndex, noCoordinates, currentValidMoveListArray[hoveredDieIndex], opposingPlayerCoordinate);
+        UI.HoverDie(hoveredDieIndex, hoveredDieIndex, noCoordinate, currentValidMoveListArray[hoveredDieIndex], opposingPlayerCoordinate);
     }
 
     void DiceSelectionTick(InputStates input) {
         lastHoveredDieIndex = hoveredDieIndex;
-        if (input == InputStates.Enter) {
+        if (input == InputStates.Enter && currentValidMoveListArray.Length > 0) {
             StartTileSelection();
         }
         else if (input == InputStates.Left) {
             hoveredDieIndex--;
             while (hoveredDieIndex < 0 || !currentActiveDie[hoveredDieIndex]) {
                 hoveredDieIndex--;
-                if (hoveredDieIndex < 0) hoveredDieIndex = numDie - 1;
+                if (hoveredDieIndex < 0) hoveredDieIndex = NUMDIE - 1;
             }
             UI.HoverDie(lastHoveredDieIndex, hoveredDieIndex, currentValidMoveListArray[lastHoveredDieIndex], currentValidMoveListArray[hoveredDieIndex], opposingPlayerCoordinate);
         }
         else if (input == InputStates.Right) {
             hoveredDieIndex++;
-            while (hoveredDieIndex >= numDie || !currentActiveDie[hoveredDieIndex]) {
+            while (hoveredDieIndex >= NUMDIE || !currentActiveDie[hoveredDieIndex]) {
                 hoveredDieIndex++;
-                if (hoveredDieIndex >= numDie) hoveredDieIndex = 0;
+                if (hoveredDieIndex >= NUMDIE) hoveredDieIndex = 0;
             }
             UI.HoverDie(lastHoveredDieIndex, hoveredDieIndex, currentValidMoveListArray[lastHoveredDieIndex], currentValidMoveListArray[hoveredDieIndex], opposingPlayerCoordinate);
         }
@@ -194,7 +215,7 @@ public class GameControl : MonoBehaviour
         List<(int, int)> validMoves = new List<(int, int)>();
         GameObject dice;
         bool successfulDice;
-        for (int i = 0; i < numDie; i++) {
+        for (int i = 0; i < NUMDIE; i++) {
             currentActiveDie[i] = true;
             moveset.Clear();
             validMoves.Clear();
@@ -213,19 +234,19 @@ public class GameControl : MonoBehaviour
     }
 
     void CheckDie() {
-        if (currentActiveDie.Count(_ => _ == true) <= 0) GenerateDie();
-
-        bool validDice = false;
+        bool hasValidDice = false;
         List<(int, int)> validMoves;
-        for (int i = 0; i < numDie; i++) {
-            List<(int, int)> moveset = GetDiceMoveset(currentDiceObjects[i]);
-            validMoves = GRID.GetValidMoveCoordinates(currentPlayerCoordinate, moveset);
-            currentValidMoveListArray[i] = validMoves;
-            if (validMoves.Count > 0) validDice = true;
+        for (int i = 0; i < NUMDIE; i++) {
+            if (currentActiveDie[i]) {
+                List<(int, int)> moveset = GetDiceMoveset(currentDiceObjects[i]);
+                validMoves = GRID.GetValidMoveCoordinates(currentPlayerCoordinate, moveset);
+                currentValidMoveListArray[i] = validMoves.ToList();
+                if (validMoves.Count > 0) hasValidDice = true;
+            }
         }
-        if (!validDice) GenerateDie();
+        if (!hasValidDice) GenerateDie();
 
-        for (int i = 0; i < numDie; i++) {
+        for (int i = 0; i < NUMDIE; i++) {
             if (currentActiveDie[i]) {
                 hoveredDieIndex = i;
                 break;
@@ -255,6 +276,7 @@ public class GameControl : MonoBehaviour
     }
 
     void SetPlayerVariables() {
+        // Saves "current" variables to corresponding player variables, based on current player turn`
         if (playerTurn == 1) {
             p1Coordinate = currentPlayerCoordinate;
             p2Coordinate = opposingPlayerCoordinate;
@@ -272,6 +294,7 @@ public class GameControl : MonoBehaviour
     }
 
     void GetPlayerVariables() {
+        // Sets all "current" variables to reflect current player turn
         if (playerTurn == 1) {
             currentPlayerCoordinate = p1Coordinate;
             opposingPlayerCoordinate = p2Coordinate;

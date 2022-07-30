@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class Grid : MonoBehaviour
 {
     // Manual-Entry information
-    private static int _gridTileWidth = GameControl.gridSize; // Number of tiles per side
+    private static int _gridTileWidth = GameControl.GRIDSIZE; // Number of tiles per side
 
     // Generated grid information
     private (int, int)[] _tileCoordinates;

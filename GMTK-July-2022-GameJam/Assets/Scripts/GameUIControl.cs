@@ -10,6 +10,7 @@ public class GameUIControl : MonoBehaviour
     // Settings
     private Vector3 hiddenPosition = new Vector3(-250, -250, -250);
     private Color shadowBaseColor = new Color(1f, 1f, 1f, 0.6f);
+    private Vector3 shadowOffset = new Vector3(0, -50, 0);
 
     // UI Collections
     private Transform tileCoordinates;
@@ -22,10 +23,10 @@ public class GameUIControl : MonoBehaviour
     private Transform opposingPlayerShadow;
     private Transform playerSkullIcon;
     private Transform hoveredPlayerSkullIcon;
-    private ((int, int), Vector3, Image)[] tiles = new ((int, int), Vector3, Image)[GameControl.gridSize*GameControl.gridSize];
-    private Transform[] dieLocations = new Transform[GameControl.numDie];
-    private Image[] arrows = new Image[GameControl.numDie];
-    private Image[] shadows = new Image[GameControl.numDie];
+    private ((int, int), Vector3, Image)[] tiles = new ((int, int), Vector3, Image)[GameControl.GRIDSIZE*GameControl.GRIDSIZE];
+    private Transform[] dieLocations = new Transform[GameControl.NUMDIE];
+    private Image[] arrows = new Image[GameControl.NUMDIE];
+    private Image[] shadows = new Image[GameControl.NUMDIE];
 
     // Sprites
     public Sprite tileHighlight;
@@ -121,14 +122,14 @@ public class GameUIControl : MonoBehaviour
 
     public void SetPlayerShadows((int, int) currentPlayerCoordinate, (int, int) opposingPlayerCoordinate) {
         foreach (((int, int) tileCoordinate, Vector3 tilePosition, Image tileImage) in tiles) {
-            if (tileCoordinate == currentPlayerCoordinate) currentPlayerShadow.position = tilePosition;
-            if (tileCoordinate == opposingPlayerCoordinate) opposingPlayerShadow.position = tilePosition;
+            if (tileCoordinate == currentPlayerCoordinate) currentPlayerShadow.position = tilePosition + shadowOffset;
+            if (tileCoordinate == opposingPlayerCoordinate) opposingPlayerShadow.position = tilePosition + shadowOffset;
         }
     }
 
     public void DisplayDie(GameObject[] die, List<(int, int)>[] movesets, bool[] activeDie) {
         Image diceImage;
-        for (int i = 0; i < GameControl.numDie; i++) {
+        for (int i = 0; i < GameControl.NUMDIE; i++) {
             die[i].transform.position = dieLocations[i].position;
             diceImage = die[i].GetComponent<Image>();
             if (activeDie[i] && movesets[i].Count < 1) diceImage.color = Color.gray;
@@ -191,7 +192,7 @@ public class GameUIControl : MonoBehaviour
     }
 
     public void HideDie(GameObject[] die) {
-        for (int i = 0; i < GameControl.numDie; i++) {
+        for (int i = 0; i < GameControl.NUMDIE; i++) {
             die[i].transform.position = hiddenPosition;
         }
     }
