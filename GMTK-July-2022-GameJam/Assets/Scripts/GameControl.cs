@@ -1,6 +1,6 @@
 /*
 Primary game control for Dodge 'n Roll. Contains the gameplay loop and logic for all game mechanics. Methods called 
-during the loop handle graphics and UI through GameUiControl. Input is handled through InputControl. 
+during the loop handle graphics and UI through GameUIControl. Input is handled through InputControl. 
 
 Loop runs as follows: GameControl.Update() calls the appropriate "tick" function per the value of "currentState"
 that handles input and delegates calls. Given an "enter" input, a state transition is initiated through the 
@@ -35,7 +35,8 @@ public class GameControl : MonoBehaviour
     private InputControl CONTROLS;
     private GameUIControl UI;
     private Grid GRID;
-    private Deck DECK;
+    private Deck P1DECK;
+    private Deck P2DECK;
 
     // State
     public enum GameStates {
@@ -85,7 +86,8 @@ public class GameControl : MonoBehaviour
         CONTROLS = gameControllerObject.GetComponent<InputControl>();
         UI = gameControllerObject.GetComponent<GameUIControl>();
         GRID = gameControllerObject.GetComponent<Grid>();
-        DECK = GameObject.Find("Deck").GetComponent<Deck>();
+        P1DECK = GameObject.Find("DeckP1").GetComponent<Deck>();
+        P2DECK = GameObject.Find("DeckP2").GetComponent<Deck>();
 
         // Set state information
         currentState = GameStates.GameStart;
@@ -112,6 +114,13 @@ public class GameControl : MonoBehaviour
     void GameStartTick(InputStates input) {
         if (input != InputStates.Idle) {
             UI.StartGame();
+
+            // Generate player 2 UI
+            SwitchPlayerTurn(false);
+            CheckDie();
+            UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
+
+            SwitchPlayerTurn(true);
             StartDiceSelection();
         }
     }
@@ -120,17 +129,22 @@ public class GameControl : MonoBehaviour
 
     void StartDiceSelection() {
         currentState = GameStates.DiceSelection;
-        GetPlayerVariables();
 
         CheckDie();
         UI.SetPlayerShadows(currentPlayerCoordinate, opposingPlayerCoordinate);
         UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
+
+        hoveredDieIndex = 0;
+        while (hoveredDieIndex < 0 || !currentActiveDie[hoveredDieIndex]) {
+            hoveredDieIndex--;
+            if (hoveredDieIndex < 0) hoveredDieIndex = NUMDIE - 1;
+        }
         UI.HoverDie(hoveredDieIndex, hoveredDieIndex, noCoordinate, currentValidMoveListArray[hoveredDieIndex], opposingPlayerCoordinate);
     }
 
     void DiceSelectionTick(InputStates input) {
         lastHoveredDieIndex = hoveredDieIndex;
-        if (input == InputStates.Enter && currentValidMoveListArray.Length > 0) {
+        if (input == InputStates.Enter && currentValidMoveListArray[hoveredDieIndex].Count > 0) {
             StartTileSelection();
         }
         else if (input == InputStates.Left) {
@@ -188,10 +202,10 @@ public class GameControl : MonoBehaviour
         UI.SelectTile(playerTurn, currentPlayerCoordinate, currentValidMoveListArray[hoveredDieIndex], moveCoordinate, opposingPlayerCoordinate);
         if (moveCoordinate == opposingPlayerCoordinate) EndRound(playerTurn);
         else {
-            UI.HideDie(currentDiceObjects);
+            // UI.HideDie(currentDiceObjects);
+            UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
             currentPlayerCoordinate = moveCoordinate;
-            SetPlayerVariables();
-            SwitchPlayerTurn();
+            SwitchPlayerTurn(true);
             StartDiceSelection();
         }
     }
@@ -225,7 +239,7 @@ public class GameControl : MonoBehaviour
                 dice = GetDice();
                 moveset = GetDiceMoveset(dice);
                 validMoves = GRID.GetValidMoveCoordinates(currentPlayerCoordinate, moveset);
-                if (validMoves.Count < 1) continue;
+                if ((currentDiceObjects.Contains(dice)) || (validMoves.Count < 1)) continue;
                 currentValidMoveListArray[i] = validMoves.ToList();
                 currentDiceObjects[i] = dice;
                 successfulDice = true;
@@ -255,7 +269,8 @@ public class GameControl : MonoBehaviour
     }
 
     GameObject GetDice() {
-        return DECK.RollTheDie();
+        if (playerTurn == 1) return P1DECK.RollTheDie();
+        else return P2DECK.RollTheDie();
     }
 
     List<(int, int)> GetDiceMoveset(GameObject dice) {
@@ -270,9 +285,16 @@ public class GameControl : MonoBehaviour
         return moveset;
     }
 
-    void SwitchPlayerTurn() {
+    void SwitchPlayerTurn(bool save) {
+        if (save)
+        {
+            SetPlayerVariables();
+            UI.SetPlayerUIElements(playerTurn);
+        }
         if (playerTurn == 1) playerTurn = 2;
         else playerTurn = 1;
+        GetPlayerVariables();
+        UI.GetPlayerUIElements(playerTurn);
     }
 
     void SetPlayerVariables() {

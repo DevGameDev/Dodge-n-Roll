@@ -14,8 +14,13 @@ public class GameUIControl : MonoBehaviour
 
     // UI Collections
     private Transform tileCoordinates;
-    private Transform diePiecePositions;
-    private Transform dieSprites;
+    private Transform currentDiePiecePositions;
+    private Transform p1DiePiecePositions;
+    private Transform p2DiePiecePositions;
+
+    private Transform currentDieSprites;
+    private Transform p1DieSprites;
+    private Transform p2DieSprites;
 
     // UI Elements
     private Image startScreen;
@@ -24,24 +29,36 @@ public class GameUIControl : MonoBehaviour
     private Transform playerSkullIcon;
     private Transform hoveredPlayerSkullIcon;
     private ((int, int), Vector3, Image)[] tiles = new ((int, int), Vector3, Image)[GameControl.GRIDSIZE*GameControl.GRIDSIZE];
-    private Transform[] dieLocations = new Transform[GameControl.NUMDIE];
-    private Image[] arrows = new Image[GameControl.NUMDIE];
-    private Image[] shadows = new Image[GameControl.NUMDIE];
+    private Transform[] currentDieLocations;
+    private Transform[] p1DieLocations = new Transform[GameControl.NUMDIE];
+    private Transform[] p2DieLocations = new Transform[GameControl.NUMDIE];
+    private Image[] currentArrows;
+    private Image[] p1Arrows = new Image[GameControl.NUMDIE];
+    private Image[] p2Arrows = new Image[GameControl.NUMDIE];
+    private Image[] currentShadows;
+    private Image[] p1Shadows = new Image[GameControl.NUMDIE];
+    private Image[] p2Shadows = new Image[GameControl.NUMDIE];
 
     // Sprites
     public Sprite tileHighlight;
     public Sprite tileHighlightHovered;
     public Sprite cowLeft;
-    public  Sprite cowRight;
+    public Sprite cowRight;
     public Sprite cowFront;
     public Sprite cowBack;
+    public Sprite pigLeft;
+    public Sprite pigRight;
+    public Sprite pigFront;
+    public Sprite pigBack;
 
     // ========== Initialization ==========
 
     public void LoadGame((int, int) p1Coordinate, (int, int) p2Coordinate) {
         tileCoordinates = GameObject.Find("gridCoordinates").GetComponent<Transform>();
-        diePiecePositions = GameObject.Find("dicePositions").GetComponent<Transform>();
-        dieSprites = GameObject.Find("Deck").GetComponent<Transform>();
+        p1DiePiecePositions = GameObject.Find("dicePositionsP1").GetComponent<Transform>();
+        p2DiePiecePositions = GameObject.Find("dicePositionsP2").GetComponent<Transform>();
+        p1DieSprites = GameObject.Find("DeckP1").GetComponent<Transform>();
+        p2DieSprites = GameObject.Find("DeckP2").GetComponent<Transform>();
         startScreen = GameObject.Find("gameStart").GetComponent<Image>();
         currentPlayerShadow = GameObject.Find("currentPlayerShadow").GetComponent<Transform>();
         currentPlayerShadow.position = hiddenPosition;
@@ -64,53 +81,75 @@ public class GameUIControl : MonoBehaviour
             tileIndex++;
         }
 
-        // Get die piece info
-        foreach (Transform diePiece in diePiecePositions) {
+        // Get player 1 die piece info
+        foreach (Transform diePiece in p1DiePiecePositions) {
             string pieceName = diePiece.gameObject.name;
             // Shadow images
             if (pieceName.StartsWith("diceShadow")) {
                 Image diceShadow = diePiece.GetComponent<Image>();
                 diceShadow.color = shadowBaseColor;
-                shadows[shadowIndex] = diceShadow;
+                p1Shadows[shadowIndex] = diceShadow;
                 shadowIndex++;
                 continue;
             }
             // Die world locations
             else if (pieceName.StartsWith("dice")) {
-                dieLocations[dieIndex] = diePiece.GetComponent<Transform>();
+                p1DieLocations[dieIndex] = diePiece.GetComponent<Transform>();
                 dieIndex++;
                 continue;
             }
             // Arrow images
             else if (pieceName.StartsWith("arrow")) {
-                arrows[arrowIndex] = diePiece.GetComponent<Image>();
+                p1Arrows[arrowIndex] = diePiece.GetComponent<Image>();
                 arrowIndex++;
                 continue;
             }
-            Image p1Image = GetCoordinateImage(p1Coordinate);
-            p1Image.enabled = true;
-            p1Image.sprite = cowBack;
-            Image p2Image = GetCoordinateImage(p1Coordinate);
-            p2Image.enabled = true;
-            p2Image.sprite = cowFront;
         }
 
-        foreach (Transform dieSprite in dieSprites) {
+        foreach (Transform dieSprite in p1DieSprites) {
+            dieSprite.position = hiddenPosition;
+        }
+        startScreen.enabled = true;
+
+        // Get player 2 die piece info
+        dieIndex = 0; arrowIndex = 0; shadowIndex = 0;
+        foreach (Transform diePiece in p2DiePiecePositions) {
+            string pieceName = diePiece.gameObject.name;
+            // Shadow images
+            if (pieceName.StartsWith("diceShadow")) {
+                Image diceShadow = diePiece.GetComponent<Image>();
+                diceShadow.color = shadowBaseColor;
+                p2Shadows[shadowIndex] = diceShadow;
+                shadowIndex++;
+                continue;
+            }
+            // Die world locations
+            else if (pieceName.StartsWith("dice")) {
+                p2DieLocations[dieIndex] = diePiece.GetComponent<Transform>();
+                dieIndex++;
+                continue;
+            }
+            // Arrow images
+            else if (pieceName.StartsWith("arrow")) {
+                p2Arrows[arrowIndex] = diePiece.GetComponent<Image>();
+                arrowIndex++;
+                continue;
+            }
+        }
+
+        foreach (Transform dieSprite in p2DieSprites) {
             dieSprite.position = hiddenPosition;
         }
         startScreen.enabled = true;
 
         // Spawn Players
-        foreach (((int, int) tileCoordinate, Vector3 tilePosition, Image tileImage) in tiles) {
-            if (tileCoordinate == p1Coordinate) {
-                tileImage.sprite = cowRight;
-                tileImage.enabled = true;
-            }
-            else if (tileCoordinate == p2Coordinate) {
-                tileImage.sprite = cowLeft;
-                tileImage.enabled = true;
-            }
-        }
+        Image p1Image = GetCoordinateImage(p1Coordinate);
+        p1Image.enabled = true;
+        p1Image.sprite = cowFront;
+        Image p2Image = GetCoordinateImage(p2Coordinate);
+        p2Image.enabled = true;
+        p2Image.sprite = pigBack;
+
     }
 
     // ========== State Transitions ==========
@@ -130,22 +169,22 @@ public class GameUIControl : MonoBehaviour
     public void DisplayDie(GameObject[] die, List<(int, int)>[] movesets, bool[] activeDie) {
         Image diceImage;
         for (int i = 0; i < GameControl.NUMDIE; i++) {
-            die[i].transform.position = dieLocations[i].position;
+            die[i].transform.position = currentDieLocations[i].position;
             diceImage = die[i].GetComponent<Image>();
             if (activeDie[i] && movesets[i].Count < 1) diceImage.color = Color.gray;
             else if (activeDie[i]) diceImage.color = Color.white;
             else {
                 diceImage.color = Color.black;
-                shadows[i].enabled = false;
-                arrows[i].enabled = false;
+                currentShadows[i].enabled = false;
+                currentArrows[i].enabled = false;
             }
             ResetDie(i);
         }
     }
 
     public void HoverDie(int lastHoveredDie, int hoveredDie, List<(int, int)> lastCoordinates, List<(int, int)> moveCoordinates, (int, int) opposingPlayerCoordinate) {
-        arrows[lastHoveredDie].enabled = false;
-        arrows[hoveredDie].enabled = true;
+        currentArrows[lastHoveredDie].enabled = false;
+        currentArrows[hoveredDie].enabled = true;
 
         HideTiles(lastCoordinates, opposingPlayerCoordinate);
         ShowTiles(moveCoordinates, opposingPlayerCoordinate);
@@ -175,19 +214,19 @@ public class GameUIControl : MonoBehaviour
     }
 
     public void SelectDie(int selectedDie, List<(int, int)> moveCoordinates, (int, int) opposingPlayerCoordinate) {
-        shadows[selectedDie].color = Color.white;
-        arrows[selectedDie].enabled = false;
+        currentShadows[selectedDie].color = Color.white;
+        currentArrows[selectedDie].enabled = false;
         HoverTile(0, 0, moveCoordinates, opposingPlayerCoordinate);
     }
 
     private void ResetDie(int selectedDie) {
-        shadows[selectedDie].color = shadowBaseColor;
-        arrows[selectedDie].enabled = false;
+        currentShadows[selectedDie].color = shadowBaseColor;
+        currentArrows[selectedDie].enabled = false;
     }
 
     public void DeselectDie(int selectedDie, int hoveredTile, List<(int, int)> moveCoordinates, (int, int) opposingPlayerCoordinate) {
-        shadows[selectedDie].color = shadowBaseColor;
-        arrows[selectedDie].enabled = true;
+        currentShadows[selectedDie].color = shadowBaseColor;
+        currentArrows[selectedDie].enabled = true;
         UnhoverTile(hoveredTile, moveCoordinates, opposingPlayerCoordinate);
     }
 
@@ -209,7 +248,11 @@ public class GameUIControl : MonoBehaviour
                 else tileImage.sprite = tileHighlightHovered;
             }
             else if (tileCoordinate == lastHoveredTileCoord) {
-                if (tileCoordinate == opposingPlayerCoordinate) hoveredPlayerSkullIcon.position = hiddenPosition;
+                if (tileCoordinate == opposingPlayerCoordinate)
+                {
+                    hoveredPlayerSkullIcon.position = hiddenPosition;
+                    playerSkullIcon.position = tilePosition;
+                }
                 else tileImage.sprite = tileHighlight;
             }
         }
@@ -227,7 +270,7 @@ public class GameUIControl : MonoBehaviour
         HideTiles(moveCoordinates, opposingPlayerCoordinate);
         Image playerImage = GetCoordinateImage(playerCoordinate);
         playerImage.enabled = false;
-        Sprite playerSprite = GetMovePlayerSprite(playerCoordinate, moveCoordinate);
+        Sprite playerSprite = GetMovePlayerSprite(playerCoordinate, moveCoordinate, playerTurn);
         Image moveImage = GetCoordinateImage(moveCoordinate);
         moveImage.enabled = true;
         moveImage.sprite = playerSprite;
@@ -259,49 +302,90 @@ public class GameUIControl : MonoBehaviour
         Back
     }
 
-    private Sprite GetMovePlayerSprite((int, int) playerCoordinate, (int, int) moveCoordinate) {
+    private Sprite GetMovePlayerSprite((int, int) playerCoordinate, (int, int) moveCoordinate, int playerTurn) {
         MoveDirection direction = GetMoveDirection(playerCoordinate, moveCoordinate);
-        if (direction == MoveDirection.Left) return cowLeft;
-        else if (direction == MoveDirection.Right) return cowRight;
-        else if (direction == MoveDirection.Back) return cowBack;
-        else return cowFront;
+        if (playerTurn == 1)
+        {
+            if (direction == MoveDirection.Left) return cowLeft;
+            else if (direction == MoveDirection.Right) return cowRight;
+            else if (direction == MoveDirection.Back) return cowBack;
+            else return cowFront;
+        }
+        else 
+        {
+            if (direction == MoveDirection.Left) return pigLeft;
+            else if (direction == MoveDirection.Right) return pigRight;
+            else if (direction == MoveDirection.Back) return pigBack;
+            else return pigFront;
+        }
     }
 
     private MoveDirection GetMoveDirection((int, int) playerCoordinate, (int, int) moveCoordinate) {
         (int playerX, int playerY) = playerCoordinate;
         (int moveX, int moveY) = moveCoordinate;
         // TODO: fix some coords
-        int xDistance = Math.Abs(playerX - moveX);
-        int yDistance = Math.Abs(playerY - moveY);
+        int xDistance = moveX - playerX;
+        int yDistance = moveY - playerY;
 
-        if (xDistance > 0 && yDistance == 0) {
-            return MoveDirection.Right;
-        }
-        else if (xDistance < 0 && yDistance == 0) {
-            return MoveDirection.Left;
-        }
-        else if (xDistance == 0 && yDistance < 0) {
-            return MoveDirection.Back;
-        }
-        else if (xDistance == 0 && yDistance > 0) {
-            return MoveDirection.Front;
-        }
-        else if (xDistance > 0 && yDistance > 0) {
+        if (xDistance > 0 && yDistance == 0) return MoveDirection.Right;
+        if (xDistance < 0 && yDistance == 0) return MoveDirection.Left;
+        if (xDistance == 0 && yDistance < 0) return MoveDirection.Back;
+        if (xDistance == 0 && yDistance > 0) return MoveDirection.Front;
+        if (xDistance > 0 && yDistance > 0) {
             if (xDistance < yDistance) return MoveDirection.Front;
             return MoveDirection.Right;
         }
-        else if (xDistance < 0 && yDistance < 0) {
+        if (xDistance < 0 && yDistance < 0) {
             if (xDistance < yDistance) return MoveDirection.Left;
             return MoveDirection.Back;
         }
-        else if (xDistance < 0 && yDistance > 0) {
+        if (xDistance < 0 && yDistance > 0) {
             if (xDistance < yDistance) return MoveDirection.Left;
             return MoveDirection.Front;
         }
-        else if (xDistance > 0 && yDistance < 0) {
+        if (xDistance > 0 && yDistance < 0) {
             if (xDistance < yDistance) return MoveDirection.Left;
         }
         return MoveDirection.Front;
     }
 
+    public void GetPlayerUIElements(int playerTurn)
+    {
+        if (playerTurn == 1)
+        {
+            currentDiePiecePositions = p1DiePiecePositions;
+            currentDieLocations = p1DieLocations;
+            currentArrows = p1Arrows;
+            currentShadows = p1Shadows;
+            currentDieSprites = p1DieSprites;
+        }
+        else
+        {
+            currentDiePiecePositions = p2DiePiecePositions;
+            currentDieLocations = p2DieLocations;
+            currentArrows = p2Arrows;
+            currentShadows = p2Shadows;
+            currentDieSprites = p2DieSprites;
+        }
+    }
+
+    public void SetPlayerUIElements(int playerTurn)
+    {
+        if (playerTurn == 1)
+        {
+            p1DiePiecePositions = currentDiePiecePositions;
+            p1DieLocations = currentDieLocations;
+            p1Arrows = currentArrows;
+            p1Shadows = currentShadows;
+            p1DieSprites = currentDieSprites;
+        }
+        else
+        {
+            p2DiePiecePositions = currentDiePiecePositions;
+            p2DieLocations = currentDieLocations;
+            p2Arrows = currentArrows;
+            p2Shadows = currentShadows;
+            p2DieSprites = currentDieSprites;
+        }
+    }
 }
