@@ -5,20 +5,7 @@ during the loop handle graphics and UI through GameUIControl. Input is handled t
 Loop runs as follows: GameControl.Update() calls the appropriate "tick" function per the value of "currentState"
 that handles input and delegates calls. Given an "enter" input, a state transition is initiated through the 
 corresponding "start" function, which handles all logic and UI pertaining to the switch. 
-
-Bounties: 
-- The moveset needs to be updated, gameplay is too predictable. (Devin has an idea)
-- On game end, the scene is simply reset. A fix likely includes:
-    - A game-end UI
-    - A system for multiple rounds
-    - Saving previous game results
-- Different sprites for each player
-- Music
-- Sound effects
-- Show both player's die on either side of board, instead of one at a time.
 */
-
-
 using System;
 using System.Linq;
 using System.Collections.Generic;
@@ -38,7 +25,7 @@ public class GameControl : MonoBehaviour
     private Deck P1DECK;
     private Deck P2DECK;
 
-    // State
+    // Possible Game States
     public enum GameStates {
         GameStart,
         DiceSelection,
@@ -47,15 +34,23 @@ public class GameControl : MonoBehaviour
         GameOver,
     }
 
+    // State
     private GameStates currentState;
     private InputStates currentInput; // Enum in InputControl
     private int playerTurn = 1; // 1 = Player 1 turn, 2 = Player 2 turn
 
+    // Score
+    private int currentScore;
+    private int p1Score;
+    private int p2Score;
+
+    // Hover indexing
     private int lastHoveredDieIndex = 0;
     private int hoveredDieIndex = 0; 
     private int lastHoveredTileIndex = 0;
     private int hoveredTileIndex = 0;
 
+    // Current player state
     private (int, int) currentPlayerCoordinate;
     private (int, int) opposingPlayerCoordinate;
     private bool[] currentActiveDie = Enumerable.Repeat(false, NUMDIE).ToArray();
@@ -118,6 +113,7 @@ public class GameControl : MonoBehaviour
             // Generate player 2 UI
             SwitchPlayerTurn(false);
             CheckDie();
+            UI.GetPlayerUIElements(playerTurn);
             UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
 
             SwitchPlayerTurn(true);
@@ -149,7 +145,7 @@ public class GameControl : MonoBehaviour
         }
         else if (input == InputStates.Left) {
             hoveredDieIndex--;
-            while (hoveredDieIndex < 0 || !currentActiveDie[hoveredDieIndex]) {
+            while (hoveredDieIndex < 0 || !currentActiveDie[hoveredDieIndex] || currentValidMoveListArray[hoveredDieIndex].Count <= 0) {
                 hoveredDieIndex--;
                 if (hoveredDieIndex < 0) hoveredDieIndex = NUMDIE - 1;
             }
@@ -157,7 +153,7 @@ public class GameControl : MonoBehaviour
         }
         else if (input == InputStates.Right) {
             hoveredDieIndex++;
-            while (hoveredDieIndex >= NUMDIE || !currentActiveDie[hoveredDieIndex]) {
+            while (hoveredDieIndex >= NUMDIE || !currentActiveDie[hoveredDieIndex] || currentValidMoveListArray[hoveredDieIndex].Count <= 0) {
                 hoveredDieIndex++;
                 if (hoveredDieIndex >= NUMDIE) hoveredDieIndex = 0;
             }

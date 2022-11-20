@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class GameUIControl : MonoBehaviour
 {
@@ -38,6 +39,13 @@ public class GameUIControl : MonoBehaviour
     private Image[] currentShadows;
     private Image[] p1Shadows = new Image[GameControl.NUMDIE];
     private Image[] p2Shadows = new Image[GameControl.NUMDIE];
+
+    // Score
+    private int currentScore;
+    private int p1Score;
+    private int p2Score;
+    private TextMeshProUGUI p1ScoreText;
+    private TextMeshProUGUI p2ScoreText;
 
     // Sprites
     public Sprite tileHighlight;
@@ -358,6 +366,7 @@ public class GameUIControl : MonoBehaviour
             currentArrows = p1Arrows;
             currentShadows = p1Shadows;
             currentDieSprites = p1DieSprites;
+            currentScore = p1Score;
         }
         else
         {
@@ -366,6 +375,7 @@ public class GameUIControl : MonoBehaviour
             currentArrows = p2Arrows;
             currentShadows = p2Shadows;
             currentDieSprites = p2DieSprites;
+            currentScore = p2Score;
         }
     }
 
@@ -378,6 +388,7 @@ public class GameUIControl : MonoBehaviour
             p1Arrows = currentArrows;
             p1Shadows = currentShadows;
             p1DieSprites = currentDieSprites;
+            p1Score = currentScore;
         }
         else
         {
@@ -386,6 +397,7 @@ public class GameUIControl : MonoBehaviour
             p2Arrows = currentArrows;
             p2Shadows = currentShadows;
             p2DieSprites = currentDieSprites;
+            p2Score = currentScore;
         }
     }
 }
