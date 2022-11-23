@@ -5,12 +5,18 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/*
+Sources and logic for audio control.
+*/
 public class GameUIControl : MonoBehaviour
 {
     // ========== Variables ==========
+    private AudioControl AUDIO;
+
     // Settings
     private Vector3 hiddenPosition = new Vector3(-250, -250, -250);
     private Color shadowBaseColor = new Color(1f, 1f, 1f, 0.6f);
+    private Color shadowBlackColor = new Color(0f, 0f, 0f, 0.8f);
     private Vector3 shadowOffset = new Vector3(0, -50, 0);
 
     // UI Collections
@@ -55,6 +61,11 @@ public class GameUIControl : MonoBehaviour
     public Sprite pigBack;
 
     // ========== Initialization ==========
+
+    private void Start() {
+        GameObject audioManagerObject = GameObject.Find("AudioManager");
+        AUDIO = audioManagerObject.GetComponent<AudioControl>();
+    }
 
     public void LoadGame((int, int) p1Coordinate, (int, int) p2Coordinate) {
         tileCoordinates = GameObject.Find("gridCoordinates").GetComponent<Transform>();
@@ -177,15 +188,15 @@ public class GameUIControl : MonoBehaviour
 
             if (!activeDie[i]) {
                 diceImage.color = Color.black;
-                currentShadows[i].enabled = false;
+                currentShadows[i].color = shadowBlackColor;
                 // currentArrows[i].enabled = false;
             }
             else {
-                currentShadows[i].enabled = true;
+                currentShadows[i].color = shadowBaseColor;
                 if (movesets[i].Count < 1) diceImage.color = Color.gray;
                 else diceImage.color = Color.white;
             }
-            ResetDie(i);
+            currentArrows[i].enabled = false;
         }
     }
 
@@ -195,6 +206,8 @@ public class GameUIControl : MonoBehaviour
 
         HideTiles(lastCoordinates, opposingPlayerCoordinate);
         ShowTiles(moveCoordinates, opposingPlayerCoordinate);
+        
+        AUDIO.PlaySound(AudioControl.SoundEffects.hoverDie);
     } 
 
     public void ShowTiles(List<(int, int)> tileCoordinates, (int, int) opposingPlayerCoordinate) {
@@ -224,11 +237,6 @@ public class GameUIControl : MonoBehaviour
         currentShadows[selectedDie].color = Color.white;
         currentArrows[selectedDie].enabled = false;
         HoverTile(0, 0, moveCoordinates, opposingPlayerCoordinate);
-    }
-
-    private void ResetDie(int selectedDie) {
-        currentShadows[selectedDie].color = shadowBaseColor;
-        currentArrows[selectedDie].enabled = false;
     }
 
     public void DeselectDie(int selectedDie, int hoveredTile, List<(int, int)> moveCoordinates, (int, int) opposingPlayerCoordinate) {
@@ -263,6 +271,7 @@ public class GameUIControl : MonoBehaviour
                 else tileImage.sprite = tileHighlight;
             }
         }
+        AUDIO.PlaySound(AudioControl.SoundEffects.hoverTile);
     }
 
     public void UnhoverTile(int hoveredTile, List<(int, int)> moveCoordinates, (int, int) opposingPlayerCoordinate) {
@@ -285,6 +294,7 @@ public class GameUIControl : MonoBehaviour
         moveImage.enabled = true;
         moveImage.sprite = playerSprite;
         Image opposingImage = GetCoordinateImage(opposingPlayerCoordinate);
+        AUDIO.PlaySound(AudioControl.SoundEffects.move);
     }
 
     // ========== Utility ==========

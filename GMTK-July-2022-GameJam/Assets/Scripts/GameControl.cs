@@ -1,3 +1,9 @@
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
 /*
 Primary game control for Dodge 'n Roll. Contains the gameplay loop and logic for all game mechanics. Methods called 
 during the loop handle graphics and UI through GameUIControl. Input is handled through InputControl. 
@@ -6,12 +12,6 @@ Loop runs as follows: GameControl.Update() calls the appropriate "tick" function
 that handles input and delegates calls. Given an "enter" input, a state transition is initiated through the 
 corresponding "start" function, which handles all logic and UI pertaining to the switch. 
 */
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-
 public class GameControl : MonoBehaviour
 {
     // Settings
@@ -21,6 +21,7 @@ public class GameControl : MonoBehaviour
     // Modules
     private InputControl CONTROLS;
     private GameUIControl UI;
+    private AudioControl AUDIO;
     private Grid GRID;
     private Deck P1DECK;
     private Deck P2DECK;
@@ -86,6 +87,7 @@ public class GameControl : MonoBehaviour
         GameObject gameControllerObject = GameObject.Find("GameController");
         CONTROLS = gameControllerObject.GetComponent<InputControl>();
         UI = gameControllerObject.GetComponent<GameUIControl>();
+        AUDIO = gameControllerObject.GetComponent<AudioControl>();
         GRID = gameControllerObject.GetComponent<Grid>();
         P1DECK = GameObject.Find("DeckP1").GetComponent<Deck>();
         P2DECK = GameObject.Find("DeckP2").GetComponent<Deck>();
