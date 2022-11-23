@@ -39,13 +39,8 @@ public class GameUIControl : MonoBehaviour
     private Image[] currentShadows;
     private Image[] p1Shadows = new Image[GameControl.NUMDIE];
     private Image[] p2Shadows = new Image[GameControl.NUMDIE];
-
-    // Score
-    private int currentScore;
-    private int p1Score;
-    private int p2Score;
-    private TextMeshProUGUI p1ScoreText;
-    private TextMeshProUGUI p2ScoreText;
+    // private TextMeshProUGUI p1ScoreText;
+    // private TextMeshProUGUI p2ScoreText;
 
     // Sprites
     public Sprite tileHighlight;
@@ -179,12 +174,16 @@ public class GameUIControl : MonoBehaviour
         for (int i = 0; i < GameControl.NUMDIE; i++) {
             die[i].transform.position = currentDieLocations[i].position;
             diceImage = die[i].GetComponent<Image>();
-            if (activeDie[i] && movesets[i].Count < 1) diceImage.color = Color.gray;
-            else if (activeDie[i]) diceImage.color = Color.white;
-            else {
+
+            if (!activeDie[i]) {
                 diceImage.color = Color.black;
                 currentShadows[i].enabled = false;
-                currentArrows[i].enabled = false;
+                // currentArrows[i].enabled = false;
+            }
+            else {
+                currentShadows[i].enabled = true;
+                if (movesets[i].Count < 1) diceImage.color = Color.gray;
+                else diceImage.color = Color.white;
             }
             ResetDie(i);
         }
@@ -269,8 +268,11 @@ public class GameUIControl : MonoBehaviour
     public void UnhoverTile(int hoveredTile, List<(int, int)> moveCoordinates, (int, int) opposingPlayerCoordinate) {
         (int, int) hoveredTileCoord = moveCoordinates[hoveredTile];
         foreach (((int, int) tileCoordinate, Vector3 tilePosition, Image tileImage) in tiles) {
-            if (tileCoordinate == opposingPlayerCoordinate) hoveredPlayerSkullIcon.position = hiddenPosition;
-            if (tileCoordinate == hoveredTileCoord) tileImage.sprite = tileHighlight;
+            if (tileCoordinate == opposingPlayerCoordinate && moveCoordinates.Contains(tileCoordinate)) {
+                hoveredPlayerSkullIcon.position = hiddenPosition;
+                playerSkullIcon.position = tilePosition;
+            }
+            else if (tileCoordinate == hoveredTileCoord) tileImage.sprite = tileHighlight;
         }
     }
     
@@ -366,7 +368,7 @@ public class GameUIControl : MonoBehaviour
             currentArrows = p1Arrows;
             currentShadows = p1Shadows;
             currentDieSprites = p1DieSprites;
-            currentScore = p1Score;
+            // currentScore = p1Score;
         }
         else
         {
@@ -375,7 +377,7 @@ public class GameUIControl : MonoBehaviour
             currentArrows = p2Arrows;
             currentShadows = p2Shadows;
             currentDieSprites = p2DieSprites;
-            currentScore = p2Score;
+            // currentScore = p2Score;
         }
     }
 
@@ -388,7 +390,7 @@ public class GameUIControl : MonoBehaviour
             p1Arrows = currentArrows;
             p1Shadows = currentShadows;
             p1DieSprites = currentDieSprites;
-            p1Score = currentScore;
+            // p1Score = currentScore;
         }
         else
         {
@@ -397,7 +399,7 @@ public class GameUIControl : MonoBehaviour
             p2Arrows = currentArrows;
             p2Shadows = currentShadows;
             p2DieSprites = currentDieSprites;
-            p2Score = currentScore;
+            // p2Score = currentScore;
         }
     }
 }

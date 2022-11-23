@@ -26,7 +26,7 @@ public class GameControl : MonoBehaviour
     private Deck P2DECK;
 
     // Possible Game States
-    public enum GameStates {
+    private enum GameStates {
         GameStart,
         DiceSelection,
         TileSelection,
@@ -39,10 +39,16 @@ public class GameControl : MonoBehaviour
     private InputStates currentInput; // Enum in InputControl
     private int playerTurn = 1; // 1 = Player 1 turn, 2 = Player 2 turn
 
+    // private enum ScoreTypes {
+    //     Kill, // Kill opponent
+    //     FullUse, // Use all three dice before reroll
+    //     Taunt, // Land on a tile adjacent to enemy
+    // }
+
     // Score
-    private int currentScore;
-    private int p1Score;
-    private int p2Score;
+    // private int currentScore;
+    // private int p1Score;
+    // private int p2Score;
 
     // Hover indexing
     private int lastHoveredDieIndex = 0;
@@ -97,7 +103,10 @@ public class GameControl : MonoBehaviour
 
     void Update()
     {
+        // Proccess input
         currentInput = CONTROLS.ProcessInput();
+
+        // On Input
         if (currentInput == InputStates.Exit) ExitGame(); // Exit closes application in any state
         else if (currentState == GameStates.GameStart) GameStartTick(currentInput);
         else if (currentState == GameStates.DiceSelection) DiceSelectionTick(currentInput);
@@ -108,11 +117,14 @@ public class GameControl : MonoBehaviour
 
     void GameStartTick(InputStates input) {
         if (input != InputStates.Idle) {
+            // Populate initial UI
             UI.StartGame();
 
             // Generate player 2 UI
             SwitchPlayerTurn(false);
-            CheckDie();
+
+            // Generate 
+            CheckDie(false);
             UI.GetPlayerUIElements(playerTurn);
             UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
 
@@ -126,12 +138,12 @@ public class GameControl : MonoBehaviour
     void StartDiceSelection() {
         currentState = GameStates.DiceSelection;
 
-        CheckDie();
+        CheckDie(false);
         UI.SetPlayerShadows(currentPlayerCoordinate, opposingPlayerCoordinate);
         UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
 
         hoveredDieIndex = 0;
-        while (hoveredDieIndex < 0 || !currentActiveDie[hoveredDieIndex]) {
+        while (hoveredDieIndex < 0 || !currentActiveDie[hoveredDieIndex] || currentValidMoveListArray[hoveredDieIndex].Count <= 0) {
             hoveredDieIndex--;
             if (hoveredDieIndex < 0) hoveredDieIndex = NUMDIE - 1;
         }
@@ -140,7 +152,7 @@ public class GameControl : MonoBehaviour
 
     void DiceSelectionTick(InputStates input) {
         lastHoveredDieIndex = hoveredDieIndex;
-        if (input == InputStates.Enter && currentValidMoveListArray[hoveredDieIndex].Count > 0) {
+        if (input == InputStates.Enter) {
             StartTileSelection();
         }
         else if (input == InputStates.Left) {
@@ -198,7 +210,7 @@ public class GameControl : MonoBehaviour
         UI.SelectTile(playerTurn, currentPlayerCoordinate, currentValidMoveListArray[hoveredDieIndex], moveCoordinate, opposingPlayerCoordinate);
         if (moveCoordinate == opposingPlayerCoordinate) EndRound(playerTurn);
         else {
-            // UI.HideDie(currentDiceObjects);
+            CheckDie(true);
             UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
             currentPlayerCoordinate = moveCoordinate;
             SwitchPlayerTurn(true);
@@ -243,7 +255,7 @@ public class GameControl : MonoBehaviour
         }
     }
 
-    void CheckDie() {
+    void CheckDie(bool hideDie = false) {
         bool hasValidDice = false;
         List<(int, int)> validMoves;
         for (int i = 0; i < NUMDIE; i++) {
@@ -254,7 +266,10 @@ public class GameControl : MonoBehaviour
                 if (validMoves.Count > 0) hasValidDice = true;
             }
         }
-        if (!hasValidDice) GenerateDie();
+        if (!hasValidDice) {
+            if (hideDie) UI.HideDie(currentDiceObjects); 
+            GenerateDie();
+        }
 
         for (int i = 0; i < NUMDIE; i++) {
             if (currentActiveDie[i]) {
