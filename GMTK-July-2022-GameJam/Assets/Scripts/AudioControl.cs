@@ -16,12 +16,10 @@ public class AudioControl : MonoBehaviour
     public AudioClip hoverTile;
     public AudioClip move;
 
-
     public enum SoundEffects {
         hoverDie,
         hoverTile,
         move,
-
     }
 
     private void Awake() {
@@ -37,7 +35,7 @@ public class AudioControl : MonoBehaviour
 
     public void PlaySound(SoundEffects sfx) {
         if (sfx is SoundEffects.hoverDie) sfxSource.PlayOneShot(hoverDie);
-        else if (sfx is SoundEffects.hoverTile) sfxSource.PlayOneShot(hoverTile, 1.5f);
-        else if (sfx is SoundEffects.move) sfxSource.PlayOneShot(move, 1);
+        else if (sfx is SoundEffects.hoverTile) sfxSource.PlayOneShot(hoverTile);
+        else if (sfx is SoundEffects.move) sfxSource.PlayOneShot(move);
     }
 }

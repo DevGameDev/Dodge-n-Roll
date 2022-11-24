@@ -21,7 +21,6 @@ public class GameControl : MonoBehaviour
     // Modules
     private InputControl CONTROLS;
     private GameUIControl UI;
-    private AudioControl AUDIO;
     private Grid GRID;
     private Deck P1DECK;
     private Deck P2DECK;
@@ -87,7 +86,6 @@ public class GameControl : MonoBehaviour
         GameObject gameControllerObject = GameObject.Find("GameController");
         CONTROLS = gameControllerObject.GetComponent<InputControl>();
         UI = gameControllerObject.GetComponent<GameUIControl>();
-        AUDIO = gameControllerObject.GetComponent<AudioControl>();
         GRID = gameControllerObject.GetComponent<Grid>();
         P1DECK = GameObject.Find("DeckP1").GetComponent<Deck>();
         P2DECK = GameObject.Find("DeckP2").GetComponent<Deck>();
