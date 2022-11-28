@@ -12,6 +12,10 @@ public class AudioControl : MonoBehaviour
     public AudioSource musicSource;
     public AudioSource sfxSource;
 
+    public AudioClip mainMenuTheme;
+    public AudioClip tutorialTheme;
+    public AudioClip gameplayTheme;
+
     public AudioClip hoverDie;
     public AudioClip hoverTile;
     public AudioClip move;
@@ -20,6 +24,12 @@ public class AudioControl : MonoBehaviour
         hoverDie,
         hoverTile,
         move,
+    }
+    
+    public enum BackgroundEffects {
+        mainMenu,
+        tutorial,
+        gameplay
     }
 
     private void Awake() {
@@ -37,5 +47,18 @@ public class AudioControl : MonoBehaviour
         if (sfx is SoundEffects.hoverDie) sfxSource.PlayOneShot(hoverDie);
         else if (sfx is SoundEffects.hoverTile) sfxSource.PlayOneShot(hoverTile);
         else if (sfx is SoundEffects.move) sfxSource.PlayOneShot(move);
+    }
+
+    public void SetBackgroundSound(BackgroundEffects sfx) {
+        if (sfx is BackgroundEffects.mainMenu) {
+            musicSource.volume = 0.7f;
+            musicSource.clip = mainMenuTheme;
+        }
+        else if (sfx is BackgroundEffects.tutorial) {
+            musicSource.volume = 0.15f;
+            musicSource.clip = tutorialTheme;
+        }
+        else if (sfx is BackgroundEffects.gameplay) musicSource.clip = gameplayTheme;
+        musicSource.Play();
     }
 }

@@ -45,8 +45,11 @@ public class GameUIControl : MonoBehaviour
     private Image[] currentShadows;
     private Image[] p1Shadows = new Image[GameControl.NUMDIE];
     private Image[] p2Shadows = new Image[GameControl.NUMDIE];
-    // private TextMeshProUGUI p1ScoreText;
-    // private TextMeshProUGUI p2ScoreText;
+    private GameObject pigWinsDisplay;
+    private GameObject cowWinsDisplay;
+    private GameObject restartButton;
+    private GameObject mainMenuButton;
+    private GameObject exitText;
 
     // Sprites
     public Sprite tileHighlight;
@@ -81,6 +84,11 @@ public class GameUIControl : MonoBehaviour
         playerSkullIcon = GameObject.Find("playerSkullIcon").GetComponent<Transform>();
         playerSkullIcon.position = hiddenPosition;
         hoveredPlayerSkullIcon = GameObject.Find("hoveredPlayerSkullIcon").GetComponent<Transform>();
+        pigWinsDisplay = GameObject.Find("PigWinsDisplay");
+        cowWinsDisplay = GameObject.Find("CowWinsDisplay");
+        restartButton = GameObject.Find("RestartButton");
+        mainMenuButton = GameObject.Find("MainMenuButton");
+        exitText = GameObject.Find("ExitText");
         hoveredPlayerSkullIcon.position = hiddenPosition;
 
         // Find tile images
@@ -164,6 +172,7 @@ public class GameUIControl : MonoBehaviour
         p2Image.enabled = true;
         p2Image.sprite = pigBack;
 
+        HideRoundOverDisplay();
     }
 
     // ========== State Transitions ==========
@@ -189,9 +198,9 @@ public class GameUIControl : MonoBehaviour
             if (!activeDie[i]) {
                 diceImage.color = Color.black;
                 currentShadows[i].color = shadowBlackColor;
-                // currentArrows[i].enabled = false;
             }
             else {
+                diceImage.color = Color.white;
                 currentShadows[i].color = shadowBaseColor;
                 if (movesets[i].Count < 1) diceImage.color = Color.gray;
                 else diceImage.color = Color.white;
@@ -207,7 +216,7 @@ public class GameUIControl : MonoBehaviour
         HideTiles(lastCoordinates, opposingPlayerCoordinate);
         ShowTiles(moveCoordinates, opposingPlayerCoordinate);
         
-        AUDIO.PlaySound(AudioControl.SoundEffects.hoverDie);
+        AUDIO.PlaySound(AudioControl.SoundEffects.hoverTile);
     } 
 
     public void ShowTiles(List<(int, int)> tileCoordinates, (int, int) opposingPlayerCoordinate) {
@@ -400,7 +409,6 @@ public class GameUIControl : MonoBehaviour
             p1Arrows = currentArrows;
             p1Shadows = currentShadows;
             p1DieSprites = currentDieSprites;
-            // p1Score = currentScore;
         }
         else
         {
@@ -409,7 +417,22 @@ public class GameUIControl : MonoBehaviour
             p2Arrows = currentArrows;
             p2Shadows = currentShadows;
             p2DieSprites = currentDieSprites;
-            // p2Score = currentScore;
         }
+    }
+
+    public void ShowRoundOverDisplay(int winner) {
+        if (winner == 1) cowWinsDisplay.SetActive(true);
+        else pigWinsDisplay.SetActive(true);
+        restartButton.SetActive(true);
+        mainMenuButton.SetActive(true);
+        exitText.SetActive(false);
+    }
+
+    public void HideRoundOverDisplay() {
+        pigWinsDisplay.SetActive(false);
+        cowWinsDisplay.SetActive(false);
+        restartButton.SetActive(false);
+        mainMenuButton.SetActive(false);
+        exitText.SetActive(true);
     }
 }

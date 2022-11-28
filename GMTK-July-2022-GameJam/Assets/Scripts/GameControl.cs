@@ -24,6 +24,7 @@ public class GameControl : MonoBehaviour
     private Grid GRID;
     private Deck P1DECK;
     private Deck P2DECK;
+    private AudioControl AUDIO;
 
     // Possible Game States
     private enum GameStates {
@@ -38,17 +39,6 @@ public class GameControl : MonoBehaviour
     private GameStates currentState;
     private InputStates currentInput; // Enum in InputControl
     private int playerTurn = 1; // 1 = Player 1 turn, 2 = Player 2 turn
-
-    // private enum ScoreTypes {
-    //     Kill, // Kill opponent
-    //     FullUse, // Use all three dice before reroll
-    //     Taunt, // Land on a tile adjacent to enemy
-    // }
-
-    // Score
-    // private int currentScore;
-    // private int p1Score;
-    // private int p2Score;
 
     // Hover indexing
     private int lastHoveredDieIndex = 0;
@@ -90,6 +80,9 @@ public class GameControl : MonoBehaviour
         P1DECK = GameObject.Find("DeckP1").GetComponent<Deck>();
         P2DECK = GameObject.Find("DeckP2").GetComponent<Deck>();
 
+        GameObject audioManagerObject = GameObject.Find("AudioManager");
+        AUDIO = audioManagerObject.GetComponent<AudioControl>();
+
         // Set state information
         currentState = GameStates.GameStart;
         currentInput = InputStates.Idle;
@@ -107,7 +100,8 @@ public class GameControl : MonoBehaviour
         currentInput = CONTROLS.ProcessInput();
 
         // On Input
-        if (currentInput == InputStates.Exit) ExitGame(); // Exit closes application in any state
+        if (currentState == GameStates.GameOver) GameOverTick(currentInput);
+        else if (currentInput == InputStates.Exit) LoadMainMenu(); // Exit closes application in any other state
         else if (currentState == GameStates.GameStart) GameStartTick(currentInput);
         else if (currentState == GameStates.DiceSelection) DiceSelectionTick(currentInput);
         else if (currentState == GameStates.TileSelection) TileSelectionTick(currentInput);
@@ -208,7 +202,7 @@ public class GameControl : MonoBehaviour
         currentActiveDie[hoveredDieIndex] = false;
         (int, int) moveCoordinate = currentValidMoveListArray[hoveredDieIndex][hoveredTileIndex];
         UI.SelectTile(playerTurn, currentPlayerCoordinate, currentValidMoveListArray[hoveredDieIndex], moveCoordinate, opposingPlayerCoordinate);
-        if (moveCoordinate == opposingPlayerCoordinate) EndRound(playerTurn);
+        if (moveCoordinate == opposingPlayerCoordinate) StartRoundEnd(playerTurn);
         else {
             CheckDie(true);
             UI.DisplayDie(currentDiceObjects, currentValidMoveListArray, currentActiveDie);
@@ -218,18 +212,29 @@ public class GameControl : MonoBehaviour
         }
     }
 
-    void EndRound(int playerWinner) {
-        Debug.Log(String.Format("Player {0} wins the round!", playerTurn));
-        SceneManager.LoadScene("GameplayScene");
+    // ========== End Round ==========
+
+    void StartRoundEnd(int playerWinner) {
+        UI.ShowRoundOverDisplay(playerWinner);
     }
+
+    void GameOverTick(InputStates input) {
+        return;
+    }
+
 
     // ===== End Game Loop =====
 
     // ===== Utility =====
 
+    public void LoadMainMenu() {
+        AUDIO.PlaySound(AudioControl.SoundEffects.hoverTile);
+        SceneManager.LoadScene("MainMenuScene");
+    }
 
-    void ExitGame() {
-        Application.Quit();
+    public void LoadGameScene() {
+        AUDIO.PlaySound(AudioControl.SoundEffects.hoverTile);
+        SceneManager.LoadScene("GameplayScene");
     }
 
     void GenerateDie() {

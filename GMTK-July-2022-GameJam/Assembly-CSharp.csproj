@@ -44,11 +44,12 @@
      <Compile Include="Assets\Scripts\ValidMoves.cs" />
      <Compile Include="Assets\Scripts\GameControl.cs" />
      <Compile Include="Assets\Scripts\InputControl.cs" />
-     <Compile Include="Assets\Scripts\TeskeAttempt\InteractionControl.cs" />
      <Compile Include="Assets\Scripts\TestSceneController.cs" />
      <Compile Include="Assets\Scripts\MainMenuControl.cs" />
      <Compile Include="Assets\Scripts\AudioControl.cs" />
      <Compile Include="Assets\Scripts\TileCtr.cs" />
+     <Compile Include="Assets\Scripts\FlashText.cs" />
+     <Compile Include="Assets\Scripts\RaycastPaddingHelper.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -59,6 +60,7 @@
      <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap-Custom-Atlas.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF.shader" />
+     <None Include="Assets\ChromaKeyShader.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile SSD.shader" />
      <None Include="Assets\TextMesh Pro\Resources\LineBreaking Leading Characters.txt" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro_Properties.cginc" />

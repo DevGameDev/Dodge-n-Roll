@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum InputStates
-{ // each automatically assigned a value on 0-(len-1)
+{ 
     Idle, // no input 
     Left, // a / left arrow / left click
     Right, // d / right arrow / right click
