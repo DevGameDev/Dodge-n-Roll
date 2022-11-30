@@ -348,4 +348,8 @@ public class GameControl : MonoBehaviour
             currentValidMoveListArray = p2ValidMoveListArray;
         }
     }
+
+    public void ExitGame() {
+        Application.Quit();
+    }
 }

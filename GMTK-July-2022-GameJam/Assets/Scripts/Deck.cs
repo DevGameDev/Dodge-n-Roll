@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Developed by Andrew Teske.
 public class Deck : MonoBehaviour
 {
 
@@ -38,11 +39,4 @@ public class Deck : MonoBehaviour
         // Debug.Log(resultingDie);
         return resultingDie;
     }
-
-    // Todo 
-    public void PlayDie()
-    {
-
-    }
-
 }

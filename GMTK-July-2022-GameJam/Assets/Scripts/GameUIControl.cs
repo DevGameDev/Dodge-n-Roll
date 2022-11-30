@@ -49,6 +49,7 @@ public class GameUIControl : MonoBehaviour
     private GameObject cowWinsDisplay;
     private GameObject restartButton;
     private GameObject mainMenuButton;
+    private GameObject QuitButton;
     private GameObject exitText;
 
     // Sprites
@@ -88,6 +89,7 @@ public class GameUIControl : MonoBehaviour
         cowWinsDisplay = GameObject.Find("CowWinsDisplay");
         restartButton = GameObject.Find("RestartButton");
         mainMenuButton = GameObject.Find("MainMenuButton");
+        QuitButton = GameObject.Find("QuitButton");
         exitText = GameObject.Find("ExitText");
         hoveredPlayerSkullIcon.position = hiddenPosition;
 

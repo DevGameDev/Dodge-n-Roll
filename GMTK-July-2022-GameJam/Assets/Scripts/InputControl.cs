@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+// Modified from code originally contributed by Peter Nelson. 
 public enum InputStates
 { 
     Idle, // no input 
